@@ -1,0 +1,1030 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Consegna DPI - Tiscanet Tecnologia &amp; Telecomunicazione</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Source+Sans+3:wght@300;400;600;700&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<style>
+:root{--navy:#1a2a4a;--steel:#2e4070;--copper:#c0622a;--green:#1e6e3a;--red:#c0192a;--yel:#e8a020;--lt:#f5f7fa;}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{min-height:100vh;background:linear-gradient(135deg,#0d1b2e,#1a2a4a 50%,#0d1b2e);font-family:"Source Sans 3",sans-serif;color:#222;}
+
+/* ---- LOGIN ---- */
+#loginScreen{display:flex;align-items:center;justify-content:center;min-height:100vh;padding:20px;}
+.lbox{background:#fff;border-radius:20px;padding:44px 40px 36px;width:100%;max-width:400px;box-shadow:0 28px 70px rgba(0,0,0,.5);text-align:center;}
+.lbox img.logo{height:62px;display:block;margin:0 auto 18px;}
+.lbox h1{font-family:"Playfair Display",serif;color:var(--navy);font-size:1.4rem;margin-bottom:4px;}
+.lbox .sub{color:#888;font-size:.78rem;margin-bottom:26px;text-transform:uppercase;letter-spacing:.06em;}
+.lfld{margin-bottom:13px;text-align:left;}
+.lfld label{display:block;font-size:.68rem;font-weight:700;color:var(--steel);letter-spacing:.08em;text-transform:uppercase;margin-bottom:4px;}
+.lfld input{width:100%;border:1.5px solid #d8dde6;border-radius:9px;padding:11px 14px;font-size:.9rem;font-family:inherit;color:#111;background:var(--lt);transition:border-color .2s;}
+.lfld input:focus{outline:none;border-color:var(--copper);background:#fff;}
+.lerr{color:#c0392b;font-size:.76rem;min-height:18px;margin-bottom:8px;text-align:left;}
+.lbtn{width:100%;background:linear-gradient(135deg,var(--navy),var(--steel));color:#fff;border:none;border-radius:11px;padding:13px;font-size:1rem;font-family:"Playfair Display",serif;cursor:pointer;box-shadow:0 6px 18px rgba(26,42,74,.3);transition:transform .15s;}
+.lbtn:hover{transform:translateY(-1px);}
+
+/* ---- MAIN ---- */
+#mainApp{display:none;flex-direction:column;align-items:center;padding:28px 16px 50px;}
+.ph{text-align:center;margin-bottom:22px;}
+.ph img.logo{height:54px;display:block;margin:0 auto 10px;filter:drop-shadow(0 2px 10px rgba(0,0,0,.4));}
+.ph h1{font-family:"Playfair Display",serif;font-size:1.6rem;color:#fff;}
+.ph p{color:rgba(255,255,255,.5);font-size:.76rem;text-transform:uppercase;letter-spacing:.07em;margin-top:2px;}
+.topbar{width:100%;max-width:1300px;display:flex;justify-content:flex-end;margin-bottom:-10px;}
+.logbtn{background:rgba(255,255,255,.1);color:rgba(255,255,255,.7);border:1px solid rgba(255,255,255,.2);border-radius:7px;padding:5px 14px;font-size:.76rem;font-family:inherit;cursor:pointer;}
+.ws{display:grid;grid-template-columns:380px 1fr;gap:22px;width:100%;max-width:1300px;align-items:start;}
+
+/* ---- LEFT PANEL ---- */
+.lp{background:#fff;border-radius:18px;padding:22px 18px;box-shadow:0 20px 52px rgba(0,0,0,.28);}
+.stitle{font-family:"Playfair Display",serif;font-size:.95rem;color:var(--navy);margin-bottom:10px;margin-top:16px;border-bottom:2px solid var(--copper);padding-bottom:6px;}
+.stitle:first-child{margin-top:0;}
+
+/* Mansioni grid */
+.mgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:5px;margin-bottom:6px;}
+.mbtn{background:var(--lt);border:1.5px solid #d8dde6;border-radius:8px;padding:7px 4px;cursor:pointer;text-align:center;transition:all .15s;font-family:inherit;width:100%;}
+.mbtn:hover{border-color:var(--copper);background:#fff8f0;}
+.mbtn.active{border-color:var(--copper);background:#fff0e8;box-shadow:0 2px 7px rgba(192,98,42,.2);}
+.mbtn span{display:block;font-size:.58rem;font-weight:600;color:var(--navy);line-height:1.3;}
+.dlegend{background:#f8faff;border:1.5px solid #d0d8f0;border-radius:10px;padding:10px 12px;margin-top:6px;display:none;max-height:200px;overflow-y:auto;}
+.dlt{font-size:.74rem;font-weight:700;color:var(--navy);margin-bottom:7px;}
+.dli{display:flex;align-items:center;gap:6px;padding:3px 0;border-bottom:.5px solid #e8ecf8;font-size:.69rem;}
+.dli:last-child{border-bottom:none;}
+.dot{width:9px;height:9px;border-radius:50%;flex-shrink:0;}
+.dot.obl{background:var(--red);}
+.dot.fac{background:var(--yel);}
+.dot.no{background:#ccc;}
+.dli-n{flex:1;}
+.badge{font-size:.58rem;font-weight:700;padding:1px 5px;border-radius:3px;}
+.badge.obl{background:#fde8e8;color:var(--red);}
+.badge.fac{background:#fef3d8;color:#a07010;}
+.badge.no{background:#f0f0f0;color:#aaa;}
+.legcol{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:6px;}
+.lci{display:flex;align-items:center;gap:4px;font-size:.64rem;color:#666;}
+
+/* Sheet */
+.shbox{background:#f0f4ff;border:1.5px solid #c4cef5;border-radius:10px;padding:10px 12px;}
+.shbox h4{font-size:.68rem;font-weight:700;color:var(--steel);letter-spacing:.07em;text-transform:uppercase;margin-bottom:6px;}
+.shrow{display:flex;gap:5px;margin-bottom:5px;}
+.shrow input{flex:1;border:1.5px solid #c4cef5;border-radius:7px;padding:7px 9px;font-size:.74rem;font-family:inherit;background:#fff;}
+.shrow input:focus{outline:none;border-color:var(--steel);}
+.shbtn{background:var(--steel);color:#fff;border:none;border-radius:7px;padding:7px 11px;font-size:.7rem;font-family:inherit;font-weight:600;cursor:pointer;white-space:nowrap;}
+.shbtn:hover{background:var(--navy);}
+.shst{font-size:.68rem;margin-top:4px;min-height:13px;color:#666;}
+.shst.ok{color:#2a7a2a;} .shst.err{color:#c0392b;}
+.csvbox{margin-top:7px;background:#fff8f0;border:1.5px solid #f0c080;border-radius:8px;padding:8px 11px;}
+.csvbox p{font-size:.66rem;color:#806010;margin-bottom:5px;line-height:1.4;}
+.csvrow{margin-bottom:5px;}
+.csvrow label{display:block;font-size:.66rem;font-weight:700;color:var(--navy);margin-bottom:2px;}
+.csvrow input[type=file]{font-size:.68rem;font-family:inherit;width:100%;border:1px solid #ddd;border-radius:5px;padding:2px;}
+.csvlinks{display:flex;gap:5px;margin-top:5px;}
+.csvlink{font-size:.62rem;color:var(--steel);text-decoration:none;background:#eef2ff;padding:3px 7px;border-radius:4px;border:1px solid #c4cef5;}
+
+/* Search */
+.sw{position:relative;margin-bottom:6px;}
+.sw input{width:100%;border:1.5px solid #d8dde6;border-radius:9px;padding:9px 11px 9px 30px;font-size:.84rem;font-family:inherit;background:var(--lt);}
+.sw input:focus{outline:none;border-color:var(--copper);background:#fff;}
+.sw .ico{position:absolute;left:9px;top:50%;transform:translateY(-50%);color:#aaa;font-size:.8rem;pointer-events:none;}
+.edrop{max-height:190px;overflow-y:auto;border:1.5px solid #d8dde6;border-radius:9px;background:#fff;display:none;box-shadow:0 6px 18px rgba(0,0,0,.12);position:absolute;left:0;right:0;top:calc(100% + 2px);z-index:200;}
+.edrop.open{display:block;}
+.eitem{padding:7px 10px;font-size:.8rem;cursor:pointer;border-bottom:1px solid #f0f2f5;display:flex;justify-content:space-between;align-items:center;}
+.eitem:last-child{border-bottom:none;}
+.eitem:hover,.eitem.sel{background:#f0f4ff;}
+.eitem.sel{background:#e8f5e9;}
+.ein{font-weight:600;color:var(--navy);}
+.eim{font-size:.66rem;color:#888;}
+
+/* Chips */
+.chips{margin-top:6px;display:flex;flex-direction:column;gap:4px;max-height:160px;overflow-y:auto;}
+.chip{display:flex;align-items:center;justify-content:space-between;background:#f0f4ff;border:1.5px solid #c4cef5;border-radius:7px;padding:5px 9px;font-size:.74rem;color:var(--navy);cursor:pointer;transition:all .15s;}
+.chip.act{border-color:var(--copper);background:#fff8f0;}
+.chipn{font-weight:700;display:block;font-size:.78rem;}
+.chipm{color:#888;font-size:.66rem;}
+.chipdel{background:none;border:none;color:#bbb;font-size:.88rem;cursor:pointer;padding:0 0 0 6px;}
+.chipdel:hover{color:#c0392b;}
+.chempty{color:#aaa;font-size:.72rem;text-align:center;padding:7px 0;}
+
+/* Firma */
+.dirbox{background:#f8f0ea;border:1.5px solid #e8c080;border-radius:9px;padding:9px 11px;margin-bottom:5px;}
+.dirbox h4{font-size:.66rem;font-weight:700;color:var(--copper);text-transform:uppercase;letter-spacing:.06em;margin-bottom:5px;}
+.drow{display:flex;gap:5px;align-items:center;}
+.ddisp{flex:1;font-size:.7rem;color:#666;background:#fff;border:1px solid #e8c080;border-radius:6px;padding:5px 7px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.ddisp.set{color:var(--navy);font-weight:600;}
+.dbtn{background:var(--copper);color:#fff;border:none;border-radius:6px;padding:5px 9px;font-size:.66rem;font-family:inherit;font-weight:600;cursor:pointer;}
+#dirInput{display:none;}
+.ssugg{background:#e8f5e9;border:1.5px solid #a0d0a0;border-radius:8px;padding:8px 10px;margin-bottom:5px;display:none;}
+.ssuggt{font-size:.66rem;font-weight:700;color:#2a6a2a;margin-bottom:4px;}
+.ssuggr{display:flex;align-items:center;gap:7px;}
+.ssuggp{width:70px;height:33px;border:1px solid #a0d0a0;border-radius:4px;background:#fff;overflow:hidden;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+.ssuggp img{max-width:100%;max-height:100%;object-fit:contain;}
+.ssuggi{flex:1;font-size:.68rem;color:#1a4a1a;}
+.ssuggi strong{display:block;margin-bottom:2px;}
+.ssuggb{display:flex;gap:4px;margin-top:3px;}
+.bok{background:#2a7a2a;color:#fff;border:none;border-radius:5px;padding:3px 8px;font-size:.64rem;font-family:inherit;cursor:pointer;}
+.bno{background:transparent;border:1.5px solid #a0d0a0;color:#2a6a2a;border-radius:5px;padding:3px 6px;font-size:.64rem;font-family:inherit;cursor:pointer;}
+.sdrop{border:2px dashed #c0c8d8;border-radius:9px;padding:9px;display:flex;align-items:center;gap:8px;cursor:pointer;background:var(--lt);}
+.sdrop:hover,.sdrop.dov{border-color:var(--copper);background:#fff8f4;}
+.sthumb{width:56px;height:28px;border-radius:4px;border:1.5px solid #d8dde6;background:#e8ebf0;display:flex;align-items:center;justify-content:center;font-size:.7rem;overflow:hidden;flex-shrink:0;color:#888;}
+.sthumb img{max-width:100%;max-height:100%;object-fit:contain;}
+.sinfo strong{display:block;color:var(--navy);font-size:.74rem;margin-bottom:1px;}
+.sinfo span{color:#888;font-size:.64rem;}
+.sibtns{display:flex;gap:4px;margin-top:3px;}
+.sbsm{background:var(--navy);color:#fff;border:none;border-radius:5px;padding:3px 9px;font-size:.64rem;font-family:inherit;cursor:pointer;}
+.scsm{background:transparent;border:1.5px solid #d0d6e0;color:#888;border-radius:5px;padding:3px 6px;font-size:.64rem;font-family:inherit;cursor:pointer;}
+#sigInput{display:none;}
+.actrow{display:flex;gap:7px;margin-top:13px;}
+.abtn1{flex:1;background:linear-gradient(135deg,var(--steel),var(--navy));color:#fff;border:none;border-radius:10px;padding:10px;font-size:.84rem;font-family:"Playfair Display",serif;cursor:pointer;}
+.abtn2{flex:1;background:linear-gradient(135deg,#c0392b,#8e1a0e);color:#fff;border:none;border-radius:10px;padding:10px;font-size:.84rem;font-family:"Playfair Display",serif;cursor:pointer;}
+.abtn2:disabled{opacity:.6;cursor:not-allowed;}
+
+/* ---- RIGHT PANEL ---- */
+.rp{background:#fff;border-radius:18px;box-shadow:0 20px 52px rgba(0,0,0,.28);overflow:hidden;}
+.rh{background:var(--navy);padding:10px 15px;display:flex;align-items:center;justify-content:space-between;}
+.rh h3{font-family:"Playfair Display",serif;color:#fff;font-size:.9rem;}
+.rnav{display:flex;align-items:center;gap:6px;}
+.rnav button{background:rgba(255,255,255,.15);color:#fff;border:1px solid rgba(255,255,255,.25);border-radius:6px;padding:3px 9px;font-family:inherit;font-size:.72rem;cursor:pointer;}
+.rnav button:disabled{opacity:.3;cursor:not-allowed;}
+.rnav span{color:rgba(255,255,255,.7);font-size:.74rem;min-width:50px;text-align:center;}
+.ra{padding:7px 14px;background:#f8f9fb;border-bottom:1px solid #eee;display:flex;gap:6px;}
+.rapbtn{padding:6px 14px;border-radius:7px;border:none;font-family:inherit;font-size:.74rem;font-weight:600;cursor:pointer;}
+.rp1btn{background:var(--navy);color:#fff;}
+.rp2btn{background:linear-gradient(135deg,#c0392b,#8e1a0e);color:#fff;}
+.rb{padding:14px;overflow-y:auto;max-height:82vh;}
+
+/* ---- DOCUMENT STYLES ---- */
+.dw{max-width:710px;margin:0 auto;font-family:"Times New Roman",serif;font-size:10pt;color:#000;background:#fff;line-height:1.4;}
+.dref{font-size:7pt;color:#888;text-align:right;margin-bottom:3px;}
+.dlogo{display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;padding-bottom:7px;border-bottom:2.5px solid var(--navy);}
+.dlogo img{height:42px;object-fit:contain;}
+.dlogotxt{text-align:right;font-size:7.5pt;color:var(--navy);line-height:1.4;}
+.dlogotxt strong{font-size:8.5pt;display:block;}
+.dtbar{background:var(--navy);color:#fff;text-align:center;padding:6px 8px;font-size:9.5pt;font-weight:bold;letter-spacing:.03em;}
+.dtsub{background:#e8ecf5;text-align:center;font-size:7.5pt;color:var(--navy);padding:3px;margin-bottom:7px;}
+.dfields{display:flex;border:1px solid #999;margin-bottom:8px;}
+.df{flex:1;padding:5px 8px;font-size:9pt;border-right:1px solid #aaa;}
+.df:last-child{border-right:none;}
+.df strong{font-weight:700;}
+.dintro{font-size:8.5pt;line-height:1.5;margin:6px 0 8px;text-align:justify;}
+.dtbl{width:100%;border-collapse:collapse;font-size:8pt;margin-bottom:8px;table-layout:fixed;}
+.dtbl th{background:var(--navy);color:#fff;padding:4px 3px;text-align:center;font-size:7pt;border:1px solid #888;overflow:hidden;}
+.dtbl td{border:1px solid #bbb;padding:3px 4px;vertical-align:middle;overflow:hidden;}
+.dtbl .tdesc{text-align:left;font-size:7.5pt;}
+.dtbl .tcenter{text-align:center;}
+.dtbl .tsmall{font-size:6.5pt;}
+.dtbl tr.row-a td{background:#fff;}
+.dtbl tr.row-a td.cok{background:#c8f0c8;font-weight:700;text-align:center;color:#1a5a1a;}
+.dtbl tr.row-f td{background:#fff;}
+.dtbl tr.row-f td.cok{background:#fef3d8;font-weight:700;text-align:center;color:#a07010;}
+.dtbl tr.row-i td{background:#f5f5f5;color:#bbb;}
+.chkbox{display:inline-block;width:13px;height:13px;border:1.5px solid #333;vertical-align:middle;text-align:center;line-height:13px;font-size:10px;font-weight:900;color:#1a5a1a;}
+.chkbox.checked{background:#c8f0c8;}
+.dtipo{margin:7px 0;font-size:8.5pt;line-height:1.7;}
+.dver{font-size:8.5pt;margin-bottom:7px;}
+.ddich{font-size:8.5pt;line-height:1.5;text-align:justify;margin:8px 0;}
+.dfirma{display:flex;justify-content:space-between;align-items:flex-end;margin-top:16px;padding-top:7px;border-top:1px solid #ccc;}
+.dfl{font-size:8.5pt;}
+.dfr{text-align:right;}
+.dflbl{font-size:8pt;color:#444;margin-bottom:4px;}
+.sigbox{width:190px;height:60px;border-bottom:1.5px solid #333;display:flex;align-items:flex-end;justify-content:center;overflow:hidden;}
+.sigbox img{max-height:56px;max-width:100%;object-fit:contain;}
+
+/* ---- MODALS ---- */
+.mo{display:none;position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:1000;align-items:center;justify-content:center;}
+.mo.open{display:flex;}
+.mbox{background:#fff;border-radius:16px;padding:24px 20px;max-width:430px;width:90%;box-shadow:0 20px 52px rgba(0,0,0,.4);}
+.mbox h3{font-family:"Playfair Display",serif;color:var(--navy);font-size:1.05rem;margin-bottom:6px;}
+.mbox p{color:#555;font-size:.8rem;margin-bottom:14px;line-height:1.5;}
+.msaved{background:#f0f4ff;border-radius:7px;padding:7px 10px;font-size:.72rem;color:var(--steel);margin-bottom:10px;display:none;}
+.msaved strong{display:block;color:var(--navy);margin-bottom:1px;}
+.mbtns{display:flex;gap:7px;}
+.mb1{flex:1;background:var(--copper);color:#fff;border:none;border-radius:9px;padding:9px;font-family:inherit;font-size:.8rem;font-weight:600;cursor:pointer;}
+.mb2{flex:1;background:var(--navy);color:#fff;border:none;border-radius:9px;padding:9px;font-family:inherit;font-size:.8rem;font-weight:600;cursor:pointer;}
+.mskip{width:100%;background:transparent;border:1.5px solid #d0d6e0;color:#888;border-radius:9px;padding:6px;font-family:inherit;font-size:.76rem;cursor:pointer;margin-top:3px;}
+/* popup facoltativi */
+.po{display:none;position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:2000;align-items:center;justify-content:center;}
+.po.open{display:flex;}
+.pbox{background:#fff;border-radius:16px;padding:24px 20px;max-width:460px;width:92%;box-shadow:0 20px 52px rgba(0,0,0,.4);}
+.pbox h3{font-family:"Playfair Display",serif;color:var(--navy);font-size:1.05rem;margin-bottom:7px;}
+.pbox p{color:#555;font-size:.8rem;margin-bottom:12px;line-height:1.5;}
+.pdl{background:#fffbe8;border:1.5px solid #f0d080;border-radius:8px;padding:9px 12px;margin-bottom:14px;max-height:160px;overflow-y:auto;}
+.pdi{display:flex;align-items:center;gap:7px;padding:3px 0;font-size:.79rem;color:var(--navy);border-bottom:.5px solid #f0e0a0;}
+.pdi:last-child{border-bottom:none;}
+.pbtns{display:flex;gap:9px;}
+.psi{flex:1;background:linear-gradient(135deg,var(--green),#155a2a);color:#fff;border:none;border-radius:9px;padding:10px;font-family:"Playfair Display",serif;font-size:.88rem;cursor:pointer;}
+.pno{flex:1;background:transparent;border:2px solid #d0d6e0;color:#555;border-radius:9px;padding:10px;font-family:"Playfair Display",serif;font-size:.88rem;cursor:pointer;}
+.spin{display:inline-block;width:11px;height:11px;border:2px solid rgba(255,255,255,.3);border-top-color:#fff;border-radius:50%;animation:sp .7s linear infinite;margin-right:3px;vertical-align:middle;}
+@keyframes sp{to{transform:rotate(360deg);}}
+@page{margin:10mm 10mm;size:A4;}@media print{
+  #loginScreen,#modalDir,#popupFac{display:none!important;}
+  body{background:#fff;}
+  #mainApp{display:block!important;padding:0;}
+  .topbar,.ph,.lp,.rh,.ra,.rnav{display:none!important;}
+  .ws{display:block!important;}
+  .rp{box-shadow:none;border-radius:0;}
+  .rb{max-height:none;padding:0;}
+  .dw{max-width:100%;width:100%;}
+}
+</style>
+</head>
+<body>
+
+<!-- MODAL CARTELLA FIRME -->
+<div class="mo" id="modalDir">
+  <div class="mbox">
+    <h3>Cartella Firme Dipendenti</h3>
+    <p>Seleziona la cartella con le immagini delle firme.</p>
+    <div class="msaved" id="msi"><strong>Percorso memorizzato:</strong> <span id="msp"></span></div>
+    <div class="mbtns">
+      <button class="mb1" id="bmus" style="display:none" onclick="useSavedDir()">Usa salvato</button>
+      <button class="mb2" onclick="pickDirFromModal()">Scegli cartella</button>
+    </div>
+    <button class="mskip" onclick="skipDir()">Salta - scegliero le firme manualmente</button>
+  </div>
+</div>
+
+<!-- POPUP DPI FACOLTATIVI -->
+<div class="po" id="popupFac">
+  <div class="pbox">
+    <h3>DPI Aggiuntivi (se svolge attività specifiche)</h3>
+    <p>Per <strong id="pname"></strong> sono previsti DPI aggiuntivi (se svolge attività).<br>Vuoi assegnarli al modulo?</p>
+    <div class="pdl" id="pdpl"></div>
+    <div class="pbtns">
+      <button class="psi" onclick="popupRispondi(true)">SI - Assegna i DPI aggiuntivi</button>
+      <button class="pno" onclick="popupRispondi(false)">NO - Solo obbligatori</button>
+    </div>
+  </div>
+</div>
+
+<!-- LOGIN -->
+<div id="loginScreen">
+  <div class="lbox">
+    <img id="loginLogo" class="logo" src="" alt="Tiscanet">
+    <h1>Consegna DPI</h1>
+    <p class="sub">Tiscanet Tecnologia &amp; Telecomunicazione</p>
+    <div class="lfld"><label>User ID</label><input type="text" id="uid" placeholder="User ID" onkeydown="if(event.key==='Enter')doLogin()"></div>
+    <div class="lfld"><label>Password</label><input type="password" id="pwd" placeholder="Password" onkeydown="if(event.key==='Enter')doLogin()"></div>
+    <div class="lerr" id="lerr"></div>
+    <button class="lbtn" onclick="doLogin()">Accedi</button>
+  </div>
+</div>
+
+<!-- MAIN APP -->
+<div id="mainApp">
+  <div class="topbar"><button class="logbtn" onclick="doLogout()">Esci</button></div>
+  <div class="ph">
+    <img id="headerLogo" class="logo" src="" alt="Tiscanet">
+    <h1>Verbale Consegna DPI</h1>
+    <p>Tiscanet Tecnologia &amp; Telecomunicazione S.r.l.</p>
+  </div>
+
+  <div class="ws">
+    <!-- ===== LEFT ===== -->
+    <div class="lp">
+
+      <!-- 1. DPI PER MANSIONE -->
+      <div class="stitle">DPI per Mansione</div>
+      <div class="legcol">
+        <div class="lci"><div class="dot obl"></div>Obbligatorio </div>
+        <div class="lci"><div class="dot fac"></div>Facoltativo (se svolge specifica attività)</div>
+        <div class="lci"><div class="dot no"></div>Non richiesto</div>
+      </div>
+      <div class="mgrid" id="mgrid"></div>
+      <div class="dlegend" id="dlegend">
+        <div class="dlt" id="dlt">-</div>
+        <div id="dllist"></div>
+      </div>
+
+      <!-- 2. ANAGRAFICA -->
+      <div class="stitle">Anagrafica</div>
+      <div class="shbox">
+        <h4>Google Sheet via Apps Script</h4>
+        <div class="shrow">
+          <input type="text" id="sheetUrl" value="https://script.google.com/macros/s/AKfycbwCFct0bjz7c1KLmZTBVa2zDLh1T_9QGpQJkHnbV0NpxuY-Yh6iHgHqhij1Up7u9FE/exec">
+          <button class="shbtn" id="btnLoad" onclick="loadSheet()">Carica</button>
+        </div>
+        <div class="shst" id="shst">Dati locali attivi (439 dipendenti)</div>
+        <details style="margin-top:8px;">
+          <summary style="font-size:.66rem;color:var(--steel);cursor:pointer;font-weight:700;">Come collegare il Google Sheet (Apps Script)</summary>
+          <div style="background:#f0f4ff;border:1px solid #c4cef5;border-radius:8px;padding:8px 10px;margin-top:6px;font-size:.65rem;color:#333;line-height:1.6;">
+            <b>1.</b> Apri il tuo Google Sheet &rarr; <b>Estensioni &rarr; Apps Script</b><br>
+            <b>2.</b> Incolla questo codice e salva:<br>
+            <pre id="appscriptCode" style="background:#1a2a4a;color:#c8f0c8;padding:8px;border-radius:5px;font-size:.6rem;overflow-x:auto;margin:4px 0;white-space:pre-wrap;">function doGet(e) {
+  var sheet = SpreadsheetApp.getActiveSpreadsheet();
+  var type = e.parameter.type || "ana";
+  var sheetName = (type === "dpi") ? "DPI X MANSIONE" : "Anagrafe aggiornata";
+  var s = sheet.getSheetByName(sheetName);
+  if (!s) s = sheet.getSheets()[type === "dpi" ? 1 : 0];
+  var data = s.getDataRange().getValues();
+  var csv = data.map(function(r){ return r.map(function(c){ 
+    var v = String(c).replace(/"/g,'""');
+    return v.indexOf(",")>=0||v.indexOf('"')>=0 ? '"'+v+'"' : v;
+  }).join(","); }).join("\n");
+  return ContentService.createTextOutput(csv)
+    .setMimeType(ContentService.MimeType.TEXT);
+}</pre>
+            <b>3.</b> Clicca <b>Distribuisci &rarr; Nuova distribuzione</b><br>
+            &nbsp;&nbsp;&nbsp;Tipo: <b>App web</b> &bull; Accesso: <b>Chiunque</b><br>
+            <b>4.</b> Copia l'URL della Web App e incollalo sopra.<br>
+            <button onclick="copyAppScript()" style="margin-top:4px;background:var(--steel);color:#fff;border:none;border-radius:5px;padding:3px 9px;font-size:.62rem;font-family:inherit;cursor:pointer;">Copia codice</button>
+          </div>
+        </details>
+        <div class="csvbox">
+          <p>Oppure importa manualmente da CSV (Google Sheet &rarr; File &rarr; Scarica &rarr; CSV):</p>
+          <div class="csvrow"><label>Foglio Anagrafe aggiornata:</label><input type="file" accept=".csv,.txt" onchange="loadManualCSV(this,'ana')"></div>
+          <div class="csvrow"><label>Foglio DPI X MANSIONE:</label><input type="file" accept=".csv,.txt" onchange="loadManualCSV(this,'dpi')"></div>
+        </div>
+      </div>
+
+      <!-- 3. DIPENDENTI -->
+      <div class="stitle">Dipendenti</div>
+      <div class="sw">
+        <span class="ico">&#128269;</span>
+        <input type="text" id="esearch" placeholder="Cerca nominativo o mansione..." oninput="filterEmps()" onfocus="openEDrop()" onblur="scheduleCloseDrop()" autocomplete="off">
+        <div class="edrop" id="edrop"></div>
+      </div>
+      <div class="chips" id="chips"><div class="chempty">Nessun dipendente selezionato</div></div>
+
+      <!-- 4. FIRMA -->
+      <div class="stitle">Firma Dipendente</div>
+      <div class="dirbox">
+        <h4>Cartella firme</h4>
+        <div class="drow">
+          <div class="ddisp" id="ddisp">Nessuna cartella selezionata</div>
+          <button class="dbtn" onclick="pickDir()">Cambia</button>
+        </div>
+        <input type="file" id="dirInput" webkitdirectory accept="image/*" onchange="handleDir(this)">
+      </div>
+      <div class="ssugg" id="ssugg">
+        <div class="ssuggt">Firma trovata automaticamente</div>
+        <div class="ssuggr">
+          <div class="ssuggp"><img id="sugImg" src="" alt=""></div>
+          <div class="ssuggi">
+            <strong id="sugFn">-</strong>
+            <span id="sugDesc"></span>
+            <div class="ssuggb">
+              <button class="bok" onclick="confSig()">USA</button>
+              <button class="bno" onclick="rejSig()">NO</button>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="sdrop" id="sdrop" onclick="openSigPick()" ondragover="evDov(event)" ondragleave="evDol(event)" ondrop="evDod(event)">
+        <div class="sthumb" id="sthumb">firma</div>
+        <div class="sinfo">
+          <strong>Firma dipendente</strong>
+          <span>Seleziona o trascina immagine</span>
+          <div class="sibtns">
+            <button class="sbsm" onclick="event.stopPropagation();openSigPick()">Sfoglia</button>
+            <button class="scsm" onclick="event.stopPropagation();clrSig()">Rimuovi</button>
+          </div>
+        </div>
+      </div>
+      <input type="file" id="sigInput" accept="image/*" onchange="handleSigFile(this)">
+
+      <!-- DATA DOCUMENTO -->
+      <div class="stitle">Data Documento</div>
+      <div class="dirbox" style="background:#f0f4ff;border-color:#c4cef5;">
+        <h4 style="color:var(--steel);">Seleziona la data</h4>
+        <div class="drow">
+          <input type="date" id="docDate" style="flex:1;border:1.5px solid #c4cef5;border-radius:7px;padding:7px 9px;font-size:.84rem;font-family:inherit;background:#fff;" oninput="renderPreview()" onchange="renderPreview()">
+        </div>
+      </div>
+
+      <div class="actrow">
+        <button class="abtn1" onclick="renderPreview()">Anteprima</button>
+        <button class="abtn2" id="btnAll" onclick="saveAllPDFs()">Salva PDF</button>
+      </div>
+    </div><!-- /left -->
+
+    <!-- ===== RIGHT ===== -->
+    <div class="rp">
+      <div class="rh">
+        <h3>Anteprima Modulo DPI</h3>
+        <div class="rnav">
+          <button id="btnPrev" onclick="navDoc(-1)" disabled>&#9664; Prec</button>
+          <span id="navLbl">-</span>
+          <button id="btnNext" onclick="navDoc(1)" disabled>Succ &#9654;</button>
+        </div>
+      </div>
+      <div class="ra">
+        <button class="rapbtn rp1btn" onclick="window.print()">Stampa</button>
+        <button class="rapbtn rp2btn" onclick="saveSinglePDF()">Salva PDF</button>
+      </div>
+      <div class="rb">
+        <div id="docPrev"><div style="text-align:center;padding:40px;color:#aaa;font-family:'Playfair Display',serif;">Seleziona un dipendente per generare il modulo</div></div>
+      </div>
+    </div><!-- /right -->
+  </div><!-- /ws -->
+</div><!-- /mainApp -->
+
+<script>
+// ============================================================
+// ALL FUNCTIONS ARE GLOBAL — no IIFE wrapper
+// All JS strings use double quotes
+// No non-ASCII characters in JS code
+// ============================================================
+
+var LOGO_SRC = "data:image/jpeg;base64,/9j/4AAQSkZJRgABAQEAeAB4AAD/2wBDAAIBAQIBAQICAgICAgICAwUDAwMDAwYEBAMFBwYHBwcGBwcICQsJCAgKCAcHCg0KCgsMDAwMBwkODw0MDgsMDAz/2wBDAQICAgMDAwYDAwYMCAcIDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAz/wAARCAA0AKsDASIAAhEBAxEB/8QAHwAAAQUBAQEBAQEAAAAAAAAAAAECAwQFBgcICQoL/8QAtRAAAgEDAwIEAwUFBAQAAAF9AQIDAAQRBRIhMUEGE1FhByJxFDKBkaEII0KxwRVS0fAkM2JyggkKFhcYGRolJicoKSo0NTY3ODk6Q0RFRkdISUpTVFVWV1hZWmNkZWZnaGlqc3R1dnd4eXqDhIWGh4iJipKTlJWWl5iZmqKjpKWmp6ipqrKztLW2t7i5usLDxMXGx8jJytLT1NXW19jZ2uHi4+Tl5ufo6erx8vP09fb3+Pn6/8QAHwEAAwEBAQEBAQEBAQAAAAAAAAECAwQFBgcICQoL/8QAtREAAgECBAQDBAcFBAQAAQJ3AAECAxEEBSExBhJBUQdhcRMiMoEIFEKRobHBCSMzUvAVYnLRChYkNOEl8RcYGRomJygpKjU2Nzg5OkNERUZHSElKU1RVVldYWVpjZGVmZ2hpanN0dXZ3eHl6goOEhYaHiImKkpOUlZaXmJmaoqOkpaanqKmqsrO0tba3uLm6wsPExcbHyMnK0tPU1dbX2Nna4uPk5ebn6Onq8vP09fb3+Pn6/9oADAMBAAIRAxEAPwD97LuaO0SaW4kjWOPLM0nAQV87/Fv/AIKt/s5/BPXP7L8SfF/wZZ3izSRTW8V8LySCRSQyOse4xsCCCrAEHivYvjN8IPDvx58A6v4T8VaWuraDrCeTeW5dk85T0wVIPFflD/wVL/4JCfsYf8E//wBlrxR8SbzwRq0WrMWt9JtB4huymoX0vCRhWfaACd+BwFjPpX1/AeU5PmWY08Jmjq81SSjH2UYt3emrb0OfG1KtOHtKZ9WX/wDwcM/sf6bK0P8Awt+xdo2KNs0bUXQkejLBgj3HFQ6Z/wAHDv7Id9fxwr8XtPtTNIIl8/RtQjiOT1LNCFXnuxAr8l/+CWX/AATY8CW/7Jnjj9qT9orwtr+ufDHw9bY0nQrEMZrxVkVZb1ow6M8KMduC+GAdtpIWv2Q+Ef7A37K/we+GOifEaz+D/gHQba30+PXE1PUtLjkvNPgZPODyMwLb1DYxyc8c191xtw74c5FjquVYSeLrVKejtKkqae7T9zWz0aOTD1cZW1kfUnw98f6R8UPCGl674d1Oz1jRdWgWe2vraQMk6MoZSpHUEEGuhQ5ReCOOh7V87eDP2zNS8R+OdL0PSPgP8YIvDlzMEg8Qy6ZYWeliHGEnCG688RsuCAYlbBGVB4r0z43/ABy8Hfs4fDHUvF3j3xRpXhnw7pca/bNR1CYxW6sfuqBnLO3ZVyxxX4xLlv7m3T0PT16nfUV8ieCv+Cnk3xN0WDVPBfwD/aC8XeG5pJBb61/YVpZW9+gOFlgS6vEnMbjBVmRcgjgdK9G+Bf7ZOl/Gjx7deE7/AMM+Pvh/4zt7E6p/YninTFt5ZbLcEaZJbeWaBgHIHMgfOTtxUge60VxfxQ+Iem/B74Y+IvFmuTNb6T4Z02fVr6XYrSCG3j8yU7SQu7avHI61zf7Hv7VnhP8Aba/Zs8L/ABP8F3lxc+G/FUBktzdRhLiFlcxSRSKMhXV1IIBOCDQB6xRXzJ/wUE/4KEeGv+CdPgnw34y8ceG/Ft34T1jWV03VNa0a0Fxb+HN8bCKe5XeDteQJED2Lk5BCq30joWpRazodneQMJIbuBJo2DbgysoIOe/B60AWqK8G+If7dvhz4b/tkeDfgrq3hvxja+IPiFDeT6Hqpsov7G1E2kHnXEazeYZN6RlcgxgZYcmsP9rb9v7T/ANkb4s/DzwbeeCvGPjXxL8ULi8h8O6f4ehhnkuGs4RPcGRpXjVMRsGHP/LOgD6N3ZkbPY/WuH+Kvx+8B/BGKKTxp4y8K+EIbpyIn1vVYLITH/ZMrgfhXM/s/fHzWvjhFqsWsfC/4kfDn7EEMX/CTJaKL3eWJ8poLiU5Tp823HGBXyJ+03/wbrfs8fHbxdrHjLxJrXxBsGu3l1C9kfX57uMM2ZJXAuN5UZycKOK9fhzCZZVxnss5rSow6OnTVRt9NOZGdf2rX7nc+n9S/4Ka/s86IjfaPjd8MY9pxtj8R2kh/RiPyrn7n/grx+zKdbtNPb42eA/tF4D5YGoqUbHrIuUH4kV/Pj+yp/wAE6/Df/BQb/gpJrHgD4VWupQ/B3w7fNLqOszuJpm0uEkB/MwMSXTg7B/CCDj5DX6z/AA3/AOCRv/BPD4WSsHXwX4guPuu+r+L1vFDLwcq0uBz1AFfrfGnBPAvDEqeHx+OrVKs4qSjyUouPMrpO8nZ+Wr8znwKzHGXlh6V7ev8AkfoP8G/j94J+PehtqXgjxZ4a8XWNo3ly3GkajDfRxN/dYxscEehruk+RcDHA9a+cfgh8Rf2df2ZPAVr4c8Cax8K/CHh5UZ4LTTtStLWOQE/O/wB7LHPU1t/ED9rzwnpOp6Tbx+L/AAtpcOsoLmHUL3Uoo4JLYMAwhJbbIWyMMOuc/wANfhuJxGGVZqjtfS+9ul7aXPc/sjHS/wCXWvoz3pPuilqvpd6mo6bb3EbeZHNGrqwOdwIyDVig4HFp2ZSuXASRjt6nhjgADqa/C7/gofPrP/Bcb/gsFovwJ8O3V1b/AAx+FMksOtX8R/cx7CPt9x6eYWVLePPQ7m6Gv1a/4KW/tSQfsZ/sUfEf4iTSD7ZomkzJpqAZ828mzFbpj3keP8jXz7/wQc/4J+TfsV/stL4j8XQeZ8TPig39veIJZfnlgjcbobck85UNub+88hznaK/TuBcxo8O5di+JXrXS9lh49pzXv1P+4cevdnJiqbqTVJHpX/BVf4e6L8Lv+CM3xh8NaDp8Gm6NoPgG5sbC2hTCW8UcQVFH0AHNdN+1F+zjq/7Wn/BO+T4f+Gdebwp4k1LRNOn0jVNm5ba8tjb3MBkXq0TSRqrjuCRV7/gpv8F/FP7R37A3xI8B+DreC58S+L9HbSLQTXH2eFWmZVZ3Y/wgZyBzVfxRpvxw8G/C3wJdaBpPhHXvEnh26X+3tAtdRazg1zTxZND5UU8owkyzGJwzYTCYPJr8zlUlOTnN3b1b7vudSXLofKPib/gpR+1t/wAE9z4V1v8Aag+FfwvvPhnqmrW/h7UvFHgvWJZL6zlnbZFdy28nyLDuwGVeQTx73v289Esv2m/+C4X7M3ws8XPa3ngHQPDWp+PrfR7rItda1aL5bcyKeJPJ2CUKRgBTmvQPjL+yV8WP+CjvjfwqPjXY+GPh78HfBerJ4gbwPZX/APa2qeJ72EL9l/tC5jAgjtY5PMfy4QWYgbq6f/gpP/wTi1b9sHxD4B+Ifw58aR/C/wCNXwmuDN4V8RC3Fxb+VOPLuLO6j+80Mqkj5exI6M1SB9i20SxW8agcKoA4xiqsmmW66k12IVa62bN2Bu2/X0r5v+FPxo/aXiC6T48+CvhZrxS0b6/4f8Zwpps4Bwji2mX7QmepXJIziuqsLP4wWYuPEWvalomoX2mwzx2fhTw1C0dpqEzEC3ee6uP3ibcuJFA2HKN1TBAPC/8AgpF+1b8Nrz40eGvgb4y8URaTot/CPEXja3TT7y+mu9Lik/0bT2W1ik2C4mGW34zDBID/AK1a85/4JW/tJ+B/ht+3P8aPgf4R1yW68EeM75/iN4FS4sLuzWI3HGq2ESXMUfyw3G2YBOAkx9K+8vgf8Kbf4b6F9ouFsrzxJrDG81jU4LcR/a53+Z8H73lhvuoThQABivAv+Cof7Ffiv9rTwv4G8UfC/wAS2Pgn4wfCnxCmp+HfEF8hmtIIZMRX1vcIvzPFJCMlO5RB0NACf8FXvAFv+0P8IvAPwav4JLjS/jH450zR9Whz5btYWgl1a6X6tFYbPq1eU/Bz4ieJf+CPHxS0f4O/EjWpvEH7Pfiq6XT/AIceOL59snha7cnytA1WZuPKYYFvck4AAjY8DH0NofhjXPHP7X/huTXtSj1KX4ZeFZZL7ZaGO1utR1OdBFNCT0aCGznX123YHc16h8cPgf4U/aQ+Fur+DvGeiaf4g8L+IrY217p99H5kM6HHY9HXGVYYKmgDw/8Aa+8Lf2z/AMFAP2Ub6GPc+i6p4guJJGGWWFtIljbnr99ov0rxf/gq34i8S+Hv+Cl/7F9x4R8O23izxJFfeLGs9NudTXTI7gf2ZHuzMyOqkLnGVOcCt79jL9i34zfszftg6Z4f8UeIl8ffAvwH4e1KPwLr+o3BbXtMN1JaBdOuyc+csMcMypMeSjKDzWp/wUf+BPxk8Tftf/s5/Fb4Q+C/Dvjr/hUM2t/2tpOqa4mlPNHf2sMCNFI4I3KBIec9B60Ae/fArx38TPHI1iT4gfDfTvAP2bYdOS38URa0bx8EsX8uGMJghcDmvhz/AIOUv28b74Gfs56P8H/CMl3N46+MMgspIrF/9MttN3KJVTHIe4dhCp9DIe1fYvgD4v8Axk8X6hBb6/8ACCx8D26zRSXl7c+LbbVEEYKmQJHbqJC3UAtwMc8V8A/sRfA+f/gp9/wV/wDiZ+0h4oVrv4efCrVX8MeCYXXMd1cwAp5oB/hj+aUf7Uy/3TX6B4cYfAYfG1M9zPWjhF7Tl/mntTh85a+iZzYq8o+xXU9w/wCCeP8AwTzj/wCCan/BMvxDotxCsfj7XdAudY8RXkPDPdPbviAP6QAhQR3Ge9fmj+zd+zUv/BRL4ix29lNaaHr1oHvfE95LCI4p7AHa94m0YScYKmI8SEh/4SD+937SqN/wzf44WXbGyaFeA4Pyr+5evwC+Fnj6+8EfCpZNM1C+8K+Ebe/FxfalaN5OpeLdSQgxWqH+GKMZUP8AdXljndivxPxCzieY5v8A2hmj9pzNya83/X3H9U/R8w9eWT4/+zEoYiUqcU2r2un063/l7+90ufoT4v8A2Wf2Tfjt8GPD/wAVLB7e4+HvwVtZ9IntIYVWHV2tyNscrNhnLuysufvmQetfAP7QXx7k8WfE24+JPiOzs/7c1FEbwV4eeMLBoGnIdiTyR9A23AWPGSQX6Bc4+qftpSX11qNr/wAInYR+FNS11fEF34cF7JHp1zeDG2aRFGCqcfuh8pcBj0rlfjBoH/CYm68caS19qWi390sl1JcN515o9wW/1Vyeyg8RuAF2ge9fFZhnUcQufDdD9+4H8M8ZlOLcc9neD0pym00k9XC62cpXvL7StFH9Gn7HupXWr/smfDe6vJGmvLnw7YyzOeruYUJP516dXlf7F+R+x/8ADEEbceGrDj0/cJXqlfrWFbdGDfZfkf5655FRzLEJfzz2/wATPn39uH9ly3/a4tvBfh7WJUHhXRfE9t4i1y0Ybv7ShtFklht8dDunELEH+FH9RXM3v/BSrwbZ/HS++Gtr4H+Ll54wsbcSy2lv4LvJIRbNK0cd0ZlGz7OXDgPn5sZHFfR2qGKzguZmXftZnO3gyHaRtz2OABmvlLQPAPxM+Dn7O/j/AOJXhDwnY+Ovj58Q79NV/srUL+KziCb1it7ESyOqKlnb5+Usu50cn5nJr1KOIjKg44l80F8CXd7/ANeh5J9d6BdrquhWdx5NxCLiFJfLuY/LmTIBw6nkMO4PQirZRSc7Rnp0r4Oh/aC/bghj8Df8WT8KahLJZS3fiWW112x2+cLiYJZDdcjyZPIWEmVfNTfKw6Jkx+N/GX7c/gyabTdP03wZ4085omTVNI0extza5tlaSP7LdapErIJ3VfMMwcqhIjwQa4t9Sj70EKht21dw6HFLsXOdoz06V+dWgeI/+CgVn46h+2ab4Pj0nWLizvLu8MNhdWGjKvl293EQ19HPHC0cD3cZiS4bN75bbTG1ee/Dj9u/9rj9srxB4xh+FujaLdeHtDuVmhurYabElsYrwTJYx34vbiKd7i1geKTfHE0TXcTnCndQB+q0saum0qGX0IrE8WeJY/COiX169lf3q2qGZ4bC1a5uZsdkjX5nbpwOa+Ddc8Xft1eMf2HdcS+8J6ZafFvVPE0dtpo8MahplhcaZoohWSS4Y3NxNbea0qyQKwd/kcP5eRivUP2Zdc+Nvg/9hPVJPiNpviCz+Ls0lxZ2qanqlr4j+zSSuUtpDJYxRJJDF5ilyYlI2SZyADSpxTnqB0fwb/4KU+E/j/4xvtG8N+Dfi850zUDpOpXtx4Ou7a0065Bw0UryAbWUkBh/Ca+lIEVlVtsYkkwzlRwWwBn9MV8Z/Ffwf8Zf2Lf2cfBfhH9nP4f6R481y4mM3iXW9c1K0gZJ22mS9nWSWLz5ZpCxYo2RjjPArifFnxX/AG6fCPxW1D+w/hR4Z8QeFdRvIb3yrnX7CM2FrEkcE1pbBZg+JWhkuEdgzL9rVGClMC8RKi6lsLFxj1bKkfoOlvHHIzrGoeTG5gOWx0yacVB7Cvz+/wCF1ft3al8MIJJvhToOi+JbvU3V0tDpepfYLQRgqSj6pFHIHlYAsJQyqpOw1euNc/bp1XwwuoJdfCrR9Yl0K9uE0Y6Ml0v9o262yW6ef9vQNHds9xIW24gjCAkvmpJPvJoUbqqngjkdj1pQigY2jHpivizxT8V/2vtV1m40jSfh/wCGfDrQ67cQJ4j1S6s7ywuNMaaOGGSG3iuxM0yxM926uq8weSv3w44Pxj8Rf28vCniWxl0fwh4T8aqyy2Mk9teWGm2rA3lx5d3JZy3bOHNtHZkBJmAEs/G4LQB9rfHSz1zUfhL4stfC+3/hIrjSrpNNL/da5MThFPoASprif2Gv2SNM/Yl/Zd8K/D3S/Lk/sG2DXt2337+7kbzLmdu5LOWxnoMDpXyz8Zfi/wD8FCm+Jmsr4L+FHgePwzb2vlWZurjT55by4EYxcLI2oRlUMu5vKdAVXALZqr4m8Xft8aR4gsLzTdD0W+bUtDgt76zNnpLW9nqUa+b5n2d9SRljl8+SB3SeUj+zwyRkSgnT6xONN4aPwPV/15DuffXjzwXb+OfBWoaPdKrW+pW8lvKrn5GVlIIbvgg1+Z3xT/4N5NU+J2secvxQ+x6fbR+Tp2m2+mJ9nsYOyJlueMAsRlsZNey6h8SP24fDPhKbX7Xwp8N/HN9cWN2IfD1m9tp6WVwl/DFbzC8kvCJVlszNc+VsXawRDICcVQ/a88OftRfHP9jf4e6R/wAI7fWnjS+1KW/8a2/hLUbO2jjtY1lWCxYzXtu2yUtFJI1vcbkaEgFlPPjY3KcHilavC59bwnx1nnDk/aZLXVNt9bfqeEv/AMGzl3CF3fFWRW6hTpifL/49XQ/Dr/g3X1j4a6z9ss/i0721wBFe2Uumh7fUYON0Ui5x04Gc4r0b9jb4VftRfCP4A+HfAVvp9x4O1681y81LWvE/ivU4fFmn6fZus7xWttCL5rguHFqjeZLtQNLtL4Un17w1F8bNY/aI8I634n8K6yNE8NaM+iXqabq9lFaa3qNxPGs2r/ZxOStvBFbb44nJlxeEbS6kDgw/CuV0X7WnA+1x3j7xxjKLoYjHSt/hX+R9I/CnwNZ/DL4baD4bsI/LsdBsIbCBOu1I0CqOfYV0NMtxtgT12in19HGyVkfkFWpKpN1Ju7bu33b3ZG1rG6MrRoyyfeBX731oNrGzbjGhYDGSvb/IFFFFklZGYJZwxFtsUa7juOFHJxjP5ACnNEr/AHlU855HeiimAeSmfur3HT1600WUKjiGMYORhR1znP580UUAD20ckbK0aMsgIYFeGB65pywqm7aqruOTgdTRRQALCqjhVH0FNFpEI9vlx7QQcbRjjpRRR5AKbeM7f3afL935elKIEDM2xcsck46miigBsltHKrK0cbK2QwK9c9aGs4XPzRRnHTKj1z/PmiigB3lr/dX8qDAh/gXrnpRRQAj28chy0aMfdaQWkS4xHGNpyML0NFFArIU20bD/AFadMdO1J9mjyT5a/N1460UUDuyQDAooooA//9k=";
+var FIRMA_GENERICA_SRC = "data:image/jpeg;base64,/9j/4AAQSkZJRgABAQEAYABgAAD/4QA6RXhpZgAATU0AKgAAAAgAA1EQAAEAAAABAQAAAFERAAQAAAABAAAAAFESAAQAAAABAAAAAAAAAAD/2wBDAAIBAQIBAQICAgICAgICAwUDAwMDAwYEBAMFBwYHBwcGBwcICQsJCAgKCAcHCg0KCgsMDAwMBwkODw0MDgsMDAz/2wBDAQICAgMDAwYDAwYMCAcIDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAz/wAARCAGdAgcDASIAAhEBAxEB/8QAHwAAAQUBAQEBAQEAAAAAAAAAAAECAwQFBgcICQoL/8QAtRAAAgEDAwIEAwUFBAQAAAF9AQIDAAQRBRIhMUEGE1FhByJxFDKBkaEII0KxwRVS0fAkM2JyggkKFhcYGRolJicoKSo0NTY3ODk6Q0RFRkdISUpTVFVWV1hZWmNkZWZnaGlqc3R1dnd4eXqDhIWGh4iJipKTlJWWl5iZmqKjpKWmp6ipqrKztLW2t7i5usLDxMXGx8jJytLT1NXW19jZ2uHi4+Tl5ufo6erx8vP09fb3+Pn6/8QAHwEAAwEBAQEBAQEBAQAAAAAAAAECAwQFBgcICQoL/8QAtREAAgECBAQDBAcFBAQAAQJ3AAECAxEEBSExBhJBUQdhcRMiMoEIFEKRobHBCSMzUvAVYnLRChYkNOEl8RcYGRomJygpKjU2Nzg5OkNERUZHSElKU1RVVldYWVpjZGVmZ2hpanN0dXZ3eHl6goOEhYaHiImKkpOUlZaXmJmaoqOkpaanqKmqsrO0tba3uLm6wsPExcbHyMnK0tPU1dbX2Nna4uPk5ebn6Onq8vP09fb3+Pn6/9oADAMBAAIRAxEAPwD9/KKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAprTokqxlgHbO0dzjrXzr/wAFSf8Ago74R/4Je/sieIPiZ4o8u+vIV+xeH9GFwIZtf1J1Yw2ytyVX5S8jgHZEjthiAp/n/wDiH8Ff2ivjXY/BT9r34jfEvxNo/wAe/j98TdJ0f4SaPpztHaaFpk7OWuzCTujsypgWOCNhvjk8yVpPOYgA/qMBzRQOKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACkZwvWlr4B/4OSv8AgoQ37A3/AATN8Tto981n42+JTHwjoDxMRLbGeNjdXS45XyrYSbWH3ZHi9aAPz38QxSf8HMH/AAXiGjmZtS/Zj/ZuLGQwkNa6wqTAOQwzn+0bmELkEE2lqSpVxk/XHxH0+P8Abe/4OZfh74Vs4rdvBP7HfgebXbyKKJfJh1rUkRIYOMBdsT2UqgdDaMOK7L/gg9+yNoX/AASQ/wCCPK+MPHES6JreuaVP8RPGtzMMS2cAtzNDbtnkeRaIgKdpWmxyxqr/AMG1fwn1bxJ+z58Sv2lvGFrJB41/ak8ZXvixllLNJaaVHPKllbAt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xNNey/bdd13UCJtU8R3p+/c3UuPmYknaowqA4A5JPvdFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAf/Z";
+
+function getDocDateStr() {
+  var el = document.getElementById("docDate");
+  if (!el) return "___/___/______";
+  var v = el.value || "";
+  if (!v || v.length < 8) return "___/___/______";
+  var parts = v.split("-");
+  if (parts.length !== 3 || parts[0].length !== 4) return "___/___/______";
+  return parts[2] + "/" + parts[1] + "/" + parts[0];
+}
+
+var EMPLOYEES = [{"matricola":"795","nominativo":"ADIL ADIL SHAH","stato":"In servizio","mansione":"IMPIANTISTA"},{"matricola":"892","nominativo":"ALBANO GIUSEPPE","stato":"In servizio","mansione":"IMPIANTISTA"},{"matricola":"1037","nominativo":"ALFIERO VINCENZO","stato":"In servizio","mansione":"IMPIANTISTA"},{"matricola":"40","nominativo":"AQUINO MARCELLO","stato":"In servizio","mansione":"IMPIEGATO AMMINISTRATIVO"},{"matricola":"992","nominativo":"ARCA ANGELO","stato":"In servizio","mansione":"IMPIANTISTA"},{"matricola":"286","nominativo":"ARGENTINO SALVATORE","stato":"In servizio","mansione":"IMPIEGATO AMMINISTRATIVO"},{"matricola":"374","nominativo":"BATANI STEFANO","stato":"In servizio","mansione":"IMPIEGATO AMMINISTRATIVO"},{"matricola":"338","nominativo":"BIANCHI DONATO","stato":"In servizio","mansione":"IMPIANTISTA"},{"matricola":"1027","nominativo":"BIANCO GIUSEPPE","stato":"In servizio","mansione":"MAGAZZINIERE"},{"matricola":"738","nominativo":"BONOMO VINCENZO","stato":"In servizio","mansione":"IMPIANTISTA"},{"matricola":"1000","nominativo":"BOSTAN MARIAN BOGDAN","stato":"In servizio","mansione":"MANOVALE"},{"matricola":"1020","nominativo":"BOUHLAL MOHAMMED","stato":"In servizio","mansione":"MANOVALE"},{"matricola":"875","nominativo":"BUNA ALEKSANDER","stato":"In servizio","mansione":"AUTISTA / ESCAVATORISTA"},{"matricola":"553","nominativo":"CALABRESE RINO","stato":"In servizio","mansione":"IMPIANTISTA"},{"matricola":"948","nominativo":"CALIA EUSTACHIO","stato":"In servizio","mansione":"MAGAZZINIERE"},{"matricola":"1019","nominativo":"CAMPANELLO FRANCESCO PIO","stato":"In servizio","mansione":"IMPIANTISTA"},{"matricola":"908","nominativo":"CANALE VITTORIO","stato":"In servizio","mansione":"IMPIEGATO TECNICO"},{"matricola":"1035","nominativo":"CANI ANI","stato":"In servizio","mansione":"MANOVALE"},{"matricola":"112","nominativo":"CAPUTO SCALABRINO","stato":"In servizio","mansione":"IMPIANTISTA"},{"matricola":"1034","nominativo":"CARANDENTE ANTONIO","stato":"In servizio","mansione":"MANOVALE"},{"matricola":"419","nominativo":"CASTALDI FRANCESCO","stato":"In servizio","mansione":"IMPIANTISTA"},{"matricola":"521","nominativo":"CASTALDO LUIGI","stato":"In servizio","mansione":"IMPIANTISTA"},{"matricola":"918","nominativo":"CASTELLONE DOMENICO","stato":"In servizio","mansione":"IMPIANTISTA"},{"matricola":"707","nominativo":"CERONE ANDREA","stato":"In servizio","mansione":"IMPIANTISTA"},{"matricola":"160","nominativo":"CIMIRRO PASQUALE","stato":"In servizio","mansione":"IMPIANTISTA"},{"matricola":"971","nominativo":"CIOFFI PASQUALE","stato":"In servizio","mansione":"IMPIANTISTA"},{"matricola":"105","nominativo":"CIRILLO LUIGI","stato":"In servizio","mansione":"IMPIANTISTA"},{"matricola":"746","nominativo":"COLOMBO LUCA","stato":"In servizio","mansione":"MAGAZZINIERE"},{"matricola":"624","nominativo":"CORLETO GIOVANNI","stato":"In servizio","mansione":"IMPIANTISTA"},{"matricola":"1007","nominativo":"CORRADO GERARDO","stato":"In servizio","mansione":"IMPIANTISTA"},{"matricola":"706","nominativo":"CORRADO MICHELE","stato":"In servizio","mansione":"IMPIANTISTA"},{"matricola":"1036","nominativo":"COSTAN MIHAI","stato":"In servizio","mansione":"AUTISTA / ESCAVATORISTA"},{"matricola":"395","nominativo":"CRISTIANI GIOVANNI","stato":"In servizio","mansione":"IMPIANTISTA"},{"matricola":"444","nominativo":"CULLHAJ ERIND","stato":"In servizio","mansione":"IMPIANTISTA"},{"matricola":"781","nominativo":"D'ALESSANDRO VITO","stato":"In servizio","mansione":"IMPIANTISTA"},{"matricola":"1024","nominativo":"D'ALTERIO VINCENZO","stato":"In servizio","mansione":"MAGAZZINIERE"},{"matricola":"1006","nominativo":"D'ANDREA VITOEMANUELE","stato":"In servizio","mansione":"IMPIANTISTA"},{"matricola":"973","nominativo":"D'ANGIO' EMANUELE","stato":"In servizio","mansione":"IMPIANTISTA"},{"matricola":"173","nominativo":"D'ANNA GIOVANNI","stato":"In servizio","mansione":"SCAVATORE MANUALE / ADDETTO SCAVO"},{"matricola":"679","nominativo":"DE BLASIO DANIELE","stato":"In servizio","mansione":"IMPIANTISTA"},{"matricola":"644","nominativo":"DE PASQUALE ADRIANO","stato":"In servizio","mansione":"IMPIANTISTA"},{"matricola":"24","nominativo":"DE PASQUALE GIAMPIERO","stato":"In servizio","mansione":"IMPIEGATO TECNICO"},{"matricola":"37","nominativo":"DEL GAUDIO VITO","stato":"In servizio","mansione":"IMPIANTISTA"},{"matricola":"56","nominativo":"DEL MASTRO RAFFAELE","stato":"In servizio","mansione":"IMPIANTISTA"},{"matricola":"999","nominativo":"DEL PRETE ANTONIO","stato":"In servizio","mansione":"MANOVALE"},{"matricola":"997","nominativo":"DELLA CORTE GIOVANNI","stato":"In servizio","mansione":"MAGAZZINIERE"},{"matricola":"1041","nominativo":"DI DONATO LUCA","stato":"In servizio","mansione":"MAGAZZINIERE"},{"matricola":"1009","nominativo":"DI GUIDO LUIGI","stato":"In servizio","mansione":"ASSISTENTE"},{"matricola":"415","nominativo":"DI MARTINO GIOVANNI","stato":"In servizio","mansione":"IMPIANTISTA"},{"matricola":"277","nominativo":"DI MARTINO VINCENZO","stato":"In servizio","mansione":"IMPIANTISTA"},{"matricola":"702","nominativo":"DI MAURO LORIS","stato":"In servizio","mansione":"IMPIANTISTA"},{"matricola":"860","nominativo":"DI NAPOLI VINCENZO","stato":"In servizio","mansione":"IMPIEGATO TECNICO"},{"matricola":"713","nominativo":"DI PASTENA PATRIZIO","stato":"In servizio","mansione":"IMPIEGATO TECNICO"},{"matricola":"203","nominativo":"DI ROSA ANGELANTONIO","stato":"In servizio","mansione":"IMPIANTISTA"},{"matricola":"1012","nominativo":"DIFILIPPO PIERGIORGIO","stato":"In servizio","mansione":"IMPIANTISTA"},{"matricola":"876","nominativo":"DISTINTO ENZO","stato":"In servizio","mansione":"CONSULENTE AZIENDALE"},{"matricola":"20","nominativo":"EVANGELISTA FERNANDO","stato":"In servizio","mansione":"IMPIANTISTA"},{"matricola":"453","nominativo":"FACCHIANO GIOVANNI","stato":"In servizio","mansione":"IMPIANTISTA"},{"matricola":"454","nominativo":"FAGGI CATERINA","stato":"In servizio","mansione":"IMPIEGATO AMMINISTRATIVO"},{"matricola":"531","nominativo":"FALEH AZIZ","stato":"In servizio","mansione":"SCAVATORE MANUALE / ADDETTO SCAVO"},{"matricola":"537","nominativo":"FALEH EL MOSTAFA","stato":"In servizio","mansione":"SCAVATORE MANUALE / ADDETTO SCAVO"},{"matricola":"175","nominativo":"FALSO GIUSEPPE","stato":"In servizio","mansione":"IMPIEGATO TECNICO"},{"matricola":"934","nominativo":"FELACE ANTONIO","stato":"In servizio","mansione":"MAGAZZINIERE"},{"matricola":"998","nominativo":"FERRACCI ALBERTO","stato":"In servizio","mansione":"IMPIANTISTA"},{"matricola":"797","nominativo":"FERRANTE GIUSEPPE","stato":"In servizio","mansione":"IMPIANTISTA"},{"matricola":"1044","nominativo":"FERRO STEFANO","stato":"In servizio","mansione":"MANOVALE"},{"matricola":"944","nominativo":"FESTA MARIO","stato":"In servizio","mansione":"MAGAZZINIERE"},{"matricola":"556","nominativo":"FRISA EMANUELE","stato":"In servizio","mansione":"IMPIANTISTA"},{"matricola":"1043","nominativo":"GARGIULO ANTONIO ALFONSO","stato":"In servizio","mansione":"MAGAZZINIERE"},{"matricola":"558","nominativo":"GENOVESE ROCCO","stato":"In servizio","mansione":"SCAVATORE MANUALE / ADDETTO SCAVO"},{"matricola":"379","nominativo":"GIACOMINI FRANCESCO","stato":"In servizio","mansione":"IMPIANTISTA"},{"matricola":"270","nominativo":"GIGLIOTTI ROSSELLA","stato":"In servizio","mansione":"IMPIEGATO AMMINISTRATIVO"},{"matricola":"646","nominativo":"GIRELLA MARIANO","stato":"In servizio","mansione":"IMPIANTISTA"},{"matricola":"516","nominativo":"GIROTTI LAMBERTO","stato":"In servizio","mansione":"IMPIEGATO AMMINISTRATIVO"},{"matricola":"1030","nominativo":"GMATI AHMED","stato":"In servizio","mansione":"IMPIANTISTA"},{"matricola":"977","nominativo":"GUASTELLA GIUSEPPE","stato":"In servizio","mansione":"IMPIANTISTA"},{"matricola":"920","nominativo":"GUERRIERO ALFONSO","stato":"In servizio","mansione":"MONTEFREDANE"},{"matricola":"805","nominativo":"HASSAN KHAIL MOHAMMAD ZAFAR","stato":"In servizio","mansione":"IMPIANTISTA"},{"matricola":"214","nominativo":"IMBIMBO GIUSEPPE ANTONIO","stato":"In servizio","mansione":"SCAVATORE MANUALE / ADDETTO SCAVO"},{"matricola":"1018","nominativo":"IODICE GIUSEPPE","stato":"In servizio","mansione":"IMPIANTISTA"},{"matricola":"322","nominativo":"IUZZOLINO ANGELO","stato":"In servizio","mansione":"IMPIANTISTA"},{"matricola":"789","nominativo":"JUST ARMANDO","stato":"In servizio","mansione":"IMPIEGATO TECNICO"},{"matricola":"1022","nominativo":"KATAANI ABDELLATIF","stato":"In servizio","mansione":"MAGAZZINIERE"},{"matricola":"511","nominativo":"KOCIU GAZMIR","stato":"In servizio","mansione":"AUTISTA / ESCAVATORISTA"},{"matricola":"60","nominativo":"LANGELLA MICHELE","stato":"In servizio","mansione":"IMPIANTISTA"},{"matricola":"886","nominativo":"LANZANO MICHELA","stato":"In servizio","mansione":"IMPIEGATA"},{"matricola":"212","nominativo":"LEONE PASQUALE","stato":"In servizio","mansione":"AUTISTA / ESCAVATORISTA"},{"matricola":"8","nominativo":"LIGUORI GERARDO","stato":"In servizio","mansione":"IMPIANTISTA"},{"matricola":"773","nominativo":"LISANTI RAFFAELE","stato":"In servizio","mansione":"SCAVATORE MANUALE / ADDETTO SCAVO"},{"matricola":"945","nominativo":"LUONGO CIRO","stato":"In servizio","mansione":"IMPIANTISTA"},{"matricola":"439","nominativo":"MAGLIO FABIO","stato":"In servizio","mansione":"IMPIEGATO TECNICO"},{"matricola":"1010","nominativo":"MANAI BRAHIM","stato":"In servizio","mansione":"MANOVALE"},{"matricola":"380","nominativo":"MANDOLINI PAOLO","stato":"In servizio","mansione":"IMPIANTISTA"},{"matricola":"164","nominativo":"MANGANELLO LUIGI","stato":"In servizio","mansione":"IMPIEGATO"},{"matricola":"899","nominativo":"MANTELLINI MAURIZIO","stato":"In servizio","mansione":"MAGAZZINIERE"},{"matricola":"527","nominativo":"MARCOGIUSEPPE MICHELE","stato":"In servizio","mansione":"IMPIANTISTA"},{"matricola":"917","nominativo":"MARINO GIANVINCENZO","stato":"In servizio","mansione":"ESCAVATORISTA"},{"matricola":"1032","nominativo":"MARSICANO CARMINE","stato":"In servizio","mansione":"IMPIANTISTA"},{"matricola":"367","nominativo":"MECCA SILVANO","stato":"In servizio","mansione":"IMPIANTISTA"},{"matricola":"1028","nominativo":"MELE VINCENZO","stato":"In servizio","mansione":"IMPIANTISTA"},{"matricola":"625","nominativo":"MENNONNA DAVIDE","stato":"In servizio","mansione":"IMPIANTISTA"},{"matricola":"1038","nominativo":"MET'HASA ANDI","stato":"In servizio","mansione":"IMPIANTISTA"},{"matricola":"921","nominativo":"MILANDRI FABIO","stato":"In servizio","mansione":"FORLI'"},{"matricola":"234","nominativo":"MORELLI SALVATORE","stato":"In servizio","mansione":"AUTISTA / ESCAVATORISTA"},{"matricola":"855","nominativo":"MOSCA ANTONIO","stato":"In servizio","mansione":"IMPIANTISTA"},{"matricola":"774","nominativo":"NARDIELLO GIOVANNI","stato":"In servizio","mansione":"IMPIEGATO TECNICO"},{"matricola":"225","nominativo":"NASO GIUSEPPE","stato":"In servizio","mansione":"IMPIANTISTA"},{"matricola":"498","nominativo":"NAZZARO UMBERTO","stato":"In servizio","mansione":"IMPIANTISTA"},{"matricola":"984","nominativo":"NEBGHAUI MORAD","stato":"In servizio","mansione":"MANOVALE"},{"matricola":"334","nominativo":"NERINO GIUSEPPE","stato":"In servizio","mansione":"IMPIEGATO TECNICO"},{"matricola":"990","nominativo":"NEZIRI BESMIR","stato":"In servizio","mansione":"IMPIANTISTA"},{"matricola":"961","nominativo":"NYAN TIJAN","stato":"In servizio","mansione":"IMPIANTISTA"},{"matricola":"125","nominativo":"PADOVANO ENRICO","stato":"In servizio","mansione":"IMPIANTISTA"},{"matricola":"1015","nominativo":"PALAMARA FRANCESCO","stato":"In servizio","mansione":"ASSISTENTE"},{"matricola":"691","nominativo":"PAPA ANTONIO","stato":"In servizio","mansione":"IMPIEGATO AMMINISTRATIVO"},{"matricola":"783","nominativo":"PAPA ASSUNTA","stato":"In servizio","mansione":"IMPIEGATO AMMINISTRATIVO"},{"matricola":"956","nominativo":"PATERNOSTRO DIODATO","stato":"In servizio","mansione":"IMPIANTISTA"},{"matricola":"949","nominativo":"PETROSINO CARMINE","stato":"In servizio","mansione":"IMPIANTISTA"},{"matricola":"670","nominativo":"PICERNO ALESSANDRO","stato":"In servizio","mansione":"IMPIANTISTA"},{"matricola":"671","nominativo":"PICERNO DANIELE","stato":"In servizio","mansione":"IMPIANTISTA"},{"matricola":"991","nominativo":"PISCRETA DOMIC","stato":"In servizio","mansione":"IMPIANTISTA"},{"matricola":"1005","nominativo":"PISCIOTTANI FABIO","stato":"In servizio","mansione":"IMPIANTISTA"},{"matricola":"510","nominativo":"PLAKU NAIM","stato":"In servizio","mansione":"IMPIANTISTA"},{"matricola":"162","nominativo":"POLICANO GIUSEPPE","stato":"In servizio","mansione":"IMPIANTISTA"},{"matricola":"360","nominativo":"PORRICELLI TOMMASO","stato":"In servizio","mansione":"IMPIANTISTA"},{"matricola":"1042","nominativo":"PRATO DANIELE","stato":"In servizio","mansione":"IMPIANTISTA"},{"matricola":"530","nominativo":"PRISCO MARIO","stato":"In servizio","mansione":"IMPIANTISTA"},{"matricola":"279","nominativo":"PRISCO SALVATORE","stato":"In servizio","mansione":"IMPIEGATO TECNICO"},{"matricola":"881","nominativo":"RAHMAN HIRONE","stato":"In servizio","mansione":"IMPIANTISTA"},{"matricola":"550","nominativo":"REDJEPI ILAZ","stato":"In servizio","mansione":"AUTISTA / ESCAVATORISTA"},{"matricola":"983","nominativo":"REDJEPI SHEFKI","stato":"In servizio","mansione":"IMPIANTISTA"},{"matricola":"981","nominativo":"RICCIO CARLO","stato":"In servizio","mansione":"IMPIANTISTA"},{"matricola":"982","nominativo":"ROBERTO DAVIDE","stato":"In servizio","mansione":"IMPIANTISTA"},{"matricola":"995","nominativo":"ROMANO GIUSEPPE MARIO","stato":"In servizio","mansione":"IMPIANTISTA"},{"matricola":"229","nominativo":"ROSSI SALVATORE","stato":"In servizio","mansione":"IMPIANTISTA"},{"matricola":"782","nominativo":"RUSCIANO CARLO","stato":"In servizio","mansione":"IMPIANTISTA"},{"matricola":"831","nominativo":"RUSSO VINCENZO","stato":"In servizio","mansione":"IMPIANTISTA"},{"matricola":"543","nominativo":"RUSTICHELLI MAURO","stato":"In servizio","mansione":"IMPIANTISTA"},{"matricola":"1017","nominativo":"SALICONE ANGELO","stato":"In servizio","mansione":"OPERAIO"},{"matricola":"520","nominativo":"SALLA ERIKLID","stato":"In servizio","mansione":"IMPIANTISTA"},{"matricola":"989","nominativo":"SAMA MARCO","stato":"In servizio","mansione":"IMPIEGATO"},{"matricola":"329","nominativo":"SANDRONI DANIELE","stato":"In servizio","mansione":"IMPIEGATO AMMINISTRATIVO"},{"matricola":"1004","nominativo":"SANTORO NICOLA","stato":"In servizio","mansione":"ESCAVATORISTA"},{"matricola":"692","nominativo":"SANTUCCI GIORGIO","stato":"In servizio","mansione":"IMPIEGATO TECNICO"},{"matricola":"1033","nominativo":"SBRIZZI GIOVANNI","stato":"In servizio","mansione":"MANOVALE"},{"matricola":"526","nominativo":"SCURO VINCENZO","stato":"In servizio","mansione":"IMPIANTISTA"},{"matricola":"931","nominativo":"SEVERINO ALESSANDRO","stato":"In servizio","mansione":"IMPIANTISTA"},{"matricola":"1008","nominativo":"SEY ALIEU","stato":"In servizio","mansione":"IMPIANTISTA"},{"matricola":"972","nominativo":"SINISGALLI PASQUALE","stato":"In servizio","mansione":"MAGAZZINIERE"},{"matricola":"1040","nominativo":"SORRENTINO GABRIELE","stato":"In servizio","mansione":"IMPIANTISTA"},{"matricola":"1031","nominativo":"SQUITIERI LUIGI","stato":"In servizio","mansione":"IMPIANTISTA"},{"matricola":"939","nominativo":"TAFA EZEL","stato":"In servizio","mansione":"IMPIANTISTA"},{"matricola":"523","nominativo":"TANCREDI ROCCO","stato":"In servizio","mansione":"IMPIANTISTA"},{"matricola":"888","nominativo":"TARDINO VINCENZO","stato":"In servizio","mansione":"IMPIANTISTA"},{"matricola":"422","nominativo":"TESEI GIANNI","stato":"In servizio","mansione":"IMPIANTISTA"},{"matricola":"349","nominativo":"TESEI MASSIMO","stato":"In servizio","mansione":"IMPIEGATO TECNICO"},{"matricola":"355","nominativo":"TORRI MASSIMILIANO","stato":"In servizio","mansione":"IMPIANTISTA"},{"matricola":"505","nominativo":"TOUZANI HAFID","stato":"In servizio","mansione":"IMPIANTISTA"},{"matricola":"420","nominativo":"TREMATERRA VINCENZO","stato":"In servizio","mansione":"SCAVATORE MANUALE / ADDETTO SCAVO"},{"matricola":"267","nominativo":"TROISI GIOVANNI","stato":"In servizio","mansione":"IMPIANTISTA"},{"matricola":"353","nominativo":"TUCCI LUIGIA","stato":"In servizio","mansione":"IMPIEGATO AMMINISTRATIVO"},{"matricola":"1001","nominativo":"UCCELLO MICHELE","stato":"In servizio","mansione":"IMPIANTISTA"},{"matricola":"571","nominativo":"VACCARO MARIO PIO ANTONIO","stato":"In servizio","mansione":"IMPIANTISTA"},{"matricola":"672","nominativo":"VACCARO VITO","stato":"In servizio","mansione":"IMPIANTISTA"},{"matricola":"26","nominativo":"VILLANI FERNANDO","stato":"In servizio","mansione":"IMPIANTISTA"},{"matricola":"941","nominativo":"VISCONTI LUIGI","stato":"In servizio","mansione":"MANOVALE"},{"matricola":"994","nominativo":"VISCONTI VINCENZO","stato":"In servizio","mansione":"IMPIANTISTA"}];
+var DPI_MAP   = {"AUTISTA":[{"nome":"VISITA MEDICA","tipo":"X"},{"nome":"Indumenti protettivi (non DPI)","tipo":"X"},{"nome":"Indumenti ad Alta Visibilita (III CTG)","tipo":"X"},{"nome":"Elmetto protettivo","tipo":"X"},{"nome":"Calzature di sicurezza","tipo":"X"},{"nome":"Guanti protettivi rischi meccanici","tipo":"X"}],"ASSISTENTE":[{"nome":"VISITA MEDICA","tipo":"X"},{"nome":"Indumenti ad Alta Visibilita (III CTG)","tipo":"X*"},{"nome":"Elmetto protettivo","tipo":"X*"},{"nome":"Calzature di sicurezza","tipo":"X*"}],"CAMIONISTA":[{"nome":"VISITA MEDICA","tipo":"X"},{"nome":"Indumenti protettivi (non DPI)","tipo":"X"},{"nome":"Indumenti ad Alta Visibilita (III CTG)","tipo":"X"},{"nome":"Elmetto protettivo","tipo":"X"},{"nome":"Calzature di sicurezza","tipo":"X"},{"nome":"Guanti protettivi rischi meccanici","tipo":"X"},{"nome":"Occhiali protettivi","tipo":"X"},{"nome":"Cuffia antirumore -29dB","tipo":"X"}],"CONDUTTORE E MANUTENTORE IMPIANTI TERMICI":[{"nome":"VISITA MEDICA","tipo":"X"},{"nome":"Indumenti protettivi (non DPI)","tipo":"X"},{"nome":"Elmetto protettivo","tipo":"X"},{"nome":"Calzature di sicurezza","tipo":"X"},{"nome":"Guanti protettivi rischi meccanici","tipo":"X"},{"nome":"Occhiali protettivi","tipo":"X"}],"COLLABORATORE":[{"nome":"Indumenti ad Alta Visibilita (III CTG)","tipo":"X*"},{"nome":"Elmetto protettivo","tipo":"X*"},{"nome":"Calzature di sicurezza","tipo":"X*"}],"DIRIGENTE":[],"ELETTRICISTA":[{"nome":"VISITA MEDICA","tipo":"X"},{"nome":"Indumenti protettivi (non DPI)","tipo":"X"},{"nome":"Indumenti ad Alta Visibilita (III CTG)","tipo":"X"},{"nome":"Elmetto protettivo","tipo":"X"},{"nome":"Calzature di sicurezza","tipo":"X"},{"nome":"Guanti protettivi rischi meccanici","tipo":"X"},{"nome":"Occhiali protettivi","tipo":"X"},{"nome":"Guanti dielettrici classe 00","tipo":"X"},{"nome":"Guanti dielettrici classe 0","tipo":"X"},{"nome":"Visiera anti arco elettrico","tipo":"X"},{"nome":"Mascherina antipolvere","tipo":"X"}],"ESCAVATORISTA":[{"nome":"VISITA MEDICA","tipo":"X"},{"nome":"Indumenti protettivi (non DPI)","tipo":"X"},{"nome":"Indumenti ad Alta Visibilita (III CTG)","tipo":"X"},{"nome":"Elmetto protettivo","tipo":"X"},{"nome":"Calzature di sicurezza","tipo":"X"},{"nome":"Guanti protettivi rischi meccanici","tipo":"X"},{"nome":"Occhiali protettivi","tipo":"X"},{"nome":"Inserti auricolari","tipo":"X"},{"nome":"Cuffia antirumore -29dB","tipo":"X"},{"nome":"Mascherina antipolvere","tipo":"X"}],"SCAVATORE MANUALE":[{"nome":"VISITA MEDICA","tipo":"X"},{"nome":"Indumenti protettivi (non DPI)","tipo":"X"},{"nome":"Indumenti ad Alta Visibilita (III CTG)","tipo":"X"},{"nome":"Elmetto protettivo","tipo":"X"},{"nome":"Calzature di sicurezza","tipo":"X"},{"nome":"Guanti protettivi rischi meccanici","tipo":"X"},{"nome":"Occhiali protettivi","tipo":"X"},{"nome":"Inserti auricolari","tipo":"X"},{"nome":"Cuffia antirumore -29dB","tipo":"X*"}],"SCAVATORE MANUALE / ADDETTO SCAVO":[{"nome":"VISITA MEDICA","tipo":"X"},{"nome":"Indumenti protettivi (non DPI)","tipo":"X"},{"nome":"Indumenti ad Alta Visibilita (III CTG)","tipo":"X"},{"nome":"Elmetto protettivo","tipo":"X"},{"nome":"Calzature di sicurezza","tipo":"X"},{"nome":"Guanti protettivi rischi meccanici","tipo":"X"},{"nome":"Occhiali protettivi","tipo":"X"},{"nome":"Inserti auricolari","tipo":"X"},{"nome":"Cuffia antirumore -29dB","tipo":"X*"}],"GIUNTISTA":[{"nome":"VISITA MEDICA","tipo":"X"},{"nome":"Indumenti protettivi (non DPI)","tipo":"X"},{"nome":"Imbracatura di Sicurezza (III CTG)","tipo":"X"},{"nome":"Cordino di posizionamento (III CTG)","tipo":"X"},{"nome":"Indumenti ad Alta Visibilita (III CTG)","tipo":"X"},{"nome":"Elmetto protettivo","tipo":"X"},{"nome":"Calzature di sicurezza","tipo":"X"},{"nome":"Guanti protettivi rischi meccanici","tipo":"X"},{"nome":"Occhiali protettivi","tipo":"X"},{"nome":"Cuffia antirumore -29dB","tipo":"X*"}],"IMPIEGATO":[],"IMPIEGATO AMMINISTRATIVO":[],"IMPIEGATA":[],"IMPIEGATO TECNICO":[{"nome":"Indumenti ad Alta Visibilita (III CTG)","tipo":"X*"},{"nome":"Elmetto protettivo","tipo":"X*"},{"nome":"Calzature di sicurezza","tipo":"X*"}],"IMPIANTISTA":[{"nome":"VISITA MEDICA","tipo":"X"},{"nome":"Indumenti protettivi (non DPI)","tipo":"X"},{"nome":"Imbracatura di Sicurezza (III CTG)","tipo":"X"},{"nome":"Cordino di trattenuta con assorbitore energia (III CTG)","tipo":"X"},{"nome":"Cordino di posizionamento (III CTG)","tipo":"X"},{"nome":"Indumenti ad Alta Visibilita (III CTG)","tipo":"X"},{"nome":"Elmetto protettivo","tipo":"X"},{"nome":"Calzature di sicurezza","tipo":"X"},{"nome":"Guanti protettivi rischi meccanici","tipo":"X"},{"nome":"Occhiali protettivi","tipo":"X"},{"nome":"Inserti auricolari","tipo":"X"},{"nome":"Guanti dielettrici classe 00","tipo":"X*"},{"nome":"Guanti dielettrici classe 0","tipo":"X*"},{"nome":"Visiera anti arco elettrico","tipo":"X*"}],"MAGAZZINIERE":[{"nome":"VISITA MEDICA","tipo":"X"},{"nome":"Indumenti protettivi (non DPI)","tipo":"X"},{"nome":"Elmetto protettivo","tipo":"X"},{"nome":"Calzature di sicurezza","tipo":"X"},{"nome":"Guanti protettivi rischi meccanici","tipo":"X"}],"MANOVALE":[{"nome":"VISITA MEDICA","tipo":"X"},{"nome":"Indumenti protettivi (non DPI)","tipo":"X"},{"nome":"Elmetto protettivo","tipo":"X"},{"nome":"Calzature di sicurezza","tipo":"X"},{"nome":"Guanti protettivi rischi meccanici","tipo":"X"},{"nome":"Occhiali protettivi","tipo":"X"},{"nome":"Mascherina antipolvere","tipo":"X"},{"nome":"Mascherina a carboni attivi","tipo":"X"}],"MANOVALE EDILE":[{"nome":"VISITA MEDICA","tipo":"X"},{"nome":"Indumenti protettivi (non DPI)","tipo":"X"},{"nome":"Imbracatura di Sicurezza (III CTG)","tipo":"X*"},{"nome":"Cordino di trattenuta con assorbitore energia (III CTG)","tipo":"X*"},{"nome":"Elmetto protettivo","tipo":"X"},{"nome":"Calzature di sicurezza","tipo":"X"},{"nome":"Guanti protettivi rischi meccanici","tipo":"X"},{"nome":"Occhiali protettivi","tipo":"X"},{"nome":"Mascherina antipolvere","tipo":"X"},{"nome":"Mascherina a carboni attivi","tipo":"X"}],"PALIFICATORE":[{"nome":"VISITA MEDICA","tipo":"X"},{"nome":"Indumenti protettivi (non DPI)","tipo":"X"},{"nome":"Imbracatura di Sicurezza (III CTG)","tipo":"X"},{"nome":"Cordino di trattenuta con assorbitore energia (III CTG)","tipo":"X"},{"nome":"Cordino di posizionamento (III CTG)","tipo":"X"},{"nome":"Indumenti ad Alta Visibilita (III CTG)","tipo":"X"},{"nome":"Elmetto protettivo","tipo":"X"},{"nome":"Calzature di sicurezza","tipo":"X"},{"nome":"Guanti protettivi rischi meccanici","tipo":"X"},{"nome":"Occhiali protettivi","tipo":"X"}],"OPERAIO EDILE":[{"nome":"VISITA MEDICA","tipo":"X"},{"nome":"Indumenti protettivi (non DPI)","tipo":"X"},{"nome":"Imbracatura di Sicurezza (III CTG)","tipo":"X*"},{"nome":"Cordino di trattenuta con assorbitore energia (III CTG)","tipo":"X*"},{"nome":"Indumenti ad Alta Visibilita (III CTG)","tipo":"X"},{"nome":"Elmetto protettivo","tipo":"X"},{"nome":"Calzature di sicurezza","tipo":"X"},{"nome":"Guanti protettivi rischi meccanici","tipo":"X"},{"nome":"Occhiali protettivi","tipo":"X"},{"nome":"Mascherina antipolvere","tipo":"X"}],"OPERAIO":[{"nome":"VISITA MEDICA","tipo":"X"},{"nome":"Indumenti protettivi (non DPI)","tipo":"X"},{"nome":"Indumenti ad Alta Visibilita (III CTG)","tipo":"X"},{"nome":"Elmetto protettivo","tipo":"X"},{"nome":"Calzature di sicurezza","tipo":"X"},{"nome":"Guanti protettivi rischi meccanici","tipo":"X"},{"nome":"Occhiali protettivi","tipo":"X"},{"nome":"Mascherina antipolvere","tipo":"X"}],"AUTISTA / ESCAVATORISTA":[{"nome":"VISITA MEDICA","tipo":"X"},{"nome":"Indumenti protettivi (non DPI)","tipo":"X"},{"nome":"Indumenti ad Alta Visibilita (III CTG)","tipo":"X"},{"nome":"Elmetto protettivo","tipo":"X"},{"nome":"Calzature di sicurezza","tipo":"X"},{"nome":"Guanti protettivi rischi meccanici","tipo":"X"},{"nome":"Occhiali protettivi","tipo":"X"},{"nome":"Inserti auricolari","tipo":"X"},{"nome":"Cuffia antirumore -29dB","tipo":"X"},{"nome":"Mascherina antipolvere","tipo":"X"}],"RESP. AZIENDA TELECOM.":[],"TECNICO ORGANIZZAZIONE LAVORO":[],"CONSULENTE AZIENDALE":[],"MECCANICO":[{"nome":"VISITA MEDICA","tipo":"X"},{"nome":"Indumenti protettivi (non DPI)","tipo":"X"},{"nome":"Elmetto protettivo","tipo":"X"},{"nome":"Calzature di sicurezza","tipo":"X"},{"nome":"Guanti protettivi rischi meccanici","tipo":"X"},{"nome":"Occhiali protettivi","tipo":"X"},{"nome":"Mascherina antipolvere","tipo":"X"},{"nome":"Mascherina a carboni attivi","tipo":"X"}]};
+var DPI_ALL   = [{"nome":"Indumenti protettivi (non DPI)","norma":"UNI EN 342-343","nmu":""},{"nome":"Imbracatura di Sicurezza (III CTG)","norma":"UNI EN 361","nmu":"922743"},{"nome":"Cordino di trattenuta con assorbitore energia (III CTG)","norma":"UNI EN 355","nmu":"94599"},{"nome":"Cordino di posizionamento (III CTG)","norma":"UNI EN 358","nmu":"921843"},{"nome":"Indumenti ad Alta Visibilita (III CTG)","norma":"UNI EN 471","nmu":"SECONDO TAGLIE"},{"nome":"Elmetto protettivo","norma":"UNI EN 397","nmu":"921608"},{"nome":"Calzature di sicurezza","norma":"UNI EN ISO 20347","nmu":"SECONDO TAGLIE"},{"nome":"Guanti protettivi rischi meccanici","norma":"EN 388:2004 420:2004","nmu":"920498"},{"nome":"Occhiali protettivi","norma":"EN 166:2001","nmu":"921609"},{"nome":"Inserti auricolari","norma":"EN 352:2002","nmu":"94601"},{"nome":"Cuffia antirumore -29dB","norma":"UNI EN 352-1","nmu":"921610"},{"nome":"Guanti dielettrici classe 00","norma":"EN 60903","nmu":"921677"},{"nome":"Guanti dielettrici classe 0","norma":"EN 60903","nmu":"921566"},{"nome":"Visiera anti arco elettrico","norma":"GS-ET-29 DIN 58118","nmu":"923119"},{"nome":"Mascherina antipolvere","norma":"UNI EN 149","nmu":""},{"nome":"Mascherina a carboni attivi","norma":"UNI EN 149:FFP3","nmu":"94600"}];
+var MANSIONI  = [{"key":"AUTISTA","label":"Autista"},{"key":"ASSISTENTE","label":"Assistente"},{"key":"AUTISTA / ESCAVATORISTA","label":"Autista/Escav."},{"key":"CAMIONISTA","label":"Camionista"},{"key":"CONDUTTORE E MANUTENTORE IMPIANTI TERMICI","label":"Cond.Imp.Termici"},{"key":"COLLABORATORE","label":"Collaboratore"},{"key":"CONSULENTE AZIENDALE","label":"Consulente Az."},{"key":"DIRIGENTE","label":"Dirigente"},{"key":"ELETTRICISTA","label":"Elettricista"},{"key":"ESCAVATORISTA","label":"Escavatorista"},{"key":"SCAVATORE MANUALE","label":"Scavatore Man."},{"key":"SCAVATORE MANUALE / ADDETTO SCAVO","label":"Scav.Man/Scavo"},{"key":"GIUNTISTA","label":"Giuntista"},{"key":"IMPIEGATO","label":"Impiegato"},{"key":"IMPIEGATA","label":"Impiegata"},{"key":"IMPIEGATO AMMINISTRATIVO","label":"Imp. Amm."},{"key":"IMPIEGATO TECNICO","label":"Imp. Tecnico"},{"key":"IMPIANTISTA","label":"Impiantista"},{"key":"MAGAZZINIERE","label":"Magazziniere"},{"key":"MANOVALE","label":"Manovale"},{"key":"MANOVALE EDILE","label":"Manovale Edile"},{"key":"MECCANICO","label":"Meccanico"},{"key":"PALIFICATORE","label":"Palificatore"},{"key":"OPERAIO EDILE","label":"Operaio Edile"},{"key":"OPERAIO","label":"Operaio"},{"key":"RESP. AZIENDA TELECOM.","label":"Resp.Telecom"},{"key":"TECNICO ORGANIZZAZIONE LAVORO","label":"Tec.Org.Lavoro"}];
+var DNORM = {
+  "VISITA MEDICA ": "VISITA MEDICA",
+  "Indumenti ad Alta Visibilita         (III CTG)": "Indumenti ad Alta Visibilita (III CTG)",
+  "Indumenti ad Alta Visibilita (III CTG)": "Indumenti ad Alta Visibilita (III CTG)",
+  "Imbracatura di Sicurezza   (III CTG)": "Imbracatura di Sicurezza (III CTG)",
+  "Cordino di trattenuta con assorbitore energia       (III CTG) ": "Cordino di trattenuta con assorbitore energia (III CTG)",
+  "Cordino di trattenuta con assorbitore energia       (III CTG)": "Cordino di trattenuta con assorbitore energia (III CTG)",
+  "Cordino di posizionamento ( III CTG)": "Cordino di posizionamento (III CTG)",
+  "Guanti protettivi contro i rischi meccanici": "Guanti protettivi rischi meccanici"
+};
+
+// Set logos immediately
+document.getElementById("loginLogo").src  = LOGO_SRC;
+document.getElementById("headerLogo").src = LOGO_SRC;
+
+function normN(s) {
+  return DNORM[s] || s;
+}
+
+function getDPIStatus(mansione) {
+  var key = (mansione || "").trim().toUpperCase();
+  var entry = DPI_MAP[key] || [];
+  var r = {};
+  for (var i = 0; i < entry.length; i++) {
+    r[normN(entry[i].nome)] = entry[i].tipo;
+  }
+  return r;
+}
+
+// ===== LOGIN =====
+var CRED = { uid: "Admin", pwd: "TISCAAD" };
+var SDIR = "tiscanet_dpi_sigDir";
+
+function doLogin() {
+  var u = document.getElementById("uid").value.trim();
+  var p = document.getElementById("pwd").value;
+  if (u === CRED.uid && p === CRED.pwd) {
+    document.getElementById("loginScreen").style.display = "none";
+    document.getElementById("mainApp").style.display    = "flex";
+    document.getElementById("lerr").textContent = "";
+    buildMGrid();
+    showDirModal();
+  } else {
+    document.getElementById("lerr").textContent = "Credenziali non valide.";
+    document.getElementById("pwd").value = "";
+    document.getElementById("pwd").focus();
+  }
+}
+
+function doLogout() {
+  document.getElementById("mainApp").style.display    = "none";
+  document.getElementById("loginScreen").style.display = "flex";
+  document.getElementById("uid").value = "";
+  document.getElementById("pwd").value = "";
+}
+
+// ===== MANSIONI GRID =====
+function buildMGrid() {
+  var g = document.getElementById("mgrid");
+  var html = "";
+  for (var i = 0; i < MANSIONI.length; i++) {
+    html += "<button class='mbtn' onclick='showMansione(" + i + ")'>";
+    html += "<span>" + MANSIONI[i].label + "</span>";
+    html += "</button>";
+  }
+  g.innerHTML = html;
+}
+
+function showMansione(idx) {
+  var m = MANSIONI[idx];
+  var btns = document.querySelectorAll(".mbtn");
+  for (var i = 0; i < btns.length; i++) btns[i].classList.remove("active");
+  btns[idx].classList.add("active");
+  var status = getDPIStatus(m.key);
+  var leg = document.getElementById("dlegend");
+  leg.style.display = "block";
+  document.getElementById("dlt").textContent = m.label + " - DPI assegnati";
+  var html = "";
+  for (var i = 0; i < DPI_ALL.length; i++) {
+    var d = DPI_ALL[i];
+    var st = status[d.nome];
+    var dc, bc, bt;
+    if (st === "X")       { dc = "obl"; bc = "obl"; bt = "OBBLIGATORIO"; }
+    else if (st === "X*") { dc = "fac"; bc = "fac"; bt = "FACOLTATIVO";  }
+    else                  { dc = "no";  bc = "no";  bt = "NON RICHIESTO"; }
+    html += "<div class='dli'><div class='dot " + dc + "'></div><span class='dli-n'>" + d.nome + "</span><span class='badge " + bc + "'>" + bt + "</span></div>";
+  }
+  document.getElementById("dllist").innerHTML = html;
+}
+
+// ===== GOOGLE SHEET =====
+
+async function loadSheet() {
+  var url = document.getElementById("sheetUrl").value.trim();
+  var btn = document.getElementById("btnLoad");
+  var st  = document.getElementById("shst");
+  if (!url || url.indexOf("script.google.com") < 0) {
+    st.textContent = "Incolla prima l'URL della Web App (Apps Script)"; st.className = "shst err"; return;
+  }
+  btn.innerHTML = "<span class='spin'></span>..."; btn.disabled = true;
+  st.textContent = "Connessione..."; st.className = "shst";
+  try {
+    var sep = url.indexOf("?") >= 0 ? "&" : "?";
+    var anaUrl = url + sep + "type=ana";
+    var r = await Promise.race([
+      fetch(anaUrl),
+      new Promise(function(_,rej){ setTimeout(function(){ rej(new Error("timeout")); }, 10000); })
+    ]);
+    if (!r.ok) throw new Error("HTTP " + r.status);
+    var text = await r.text();
+    var ep = parseAnaCSV(text);
+    if (ep.length > 0) {
+      EMPLOYEES = ep; st.textContent = "Caricati " + ep.length + " dipendenti da Sheet"; st.className = "shst ok";
+    } else {
+      st.textContent = "Nessun nominativo trovato nel foglio"; st.className = "shst err";
+    }
+  } catch(e) {
+    st.textContent = "Errore: " + e.message; st.className = "shst err";
+  }
+  btn.innerHTML = "Carica"; btn.disabled = false;
+}
+
+function copyAppScript() {
+  var code = document.getElementById("appscriptCode").textContent;
+  navigator.clipboard.writeText(code).then(function(){ alert("Codice copiato negli appunti!"); });
+}
+
+function parseLine(line) {
+  var r = [], cur = "", inQ = false;
+  for (var i = 0; i < line.length; i++) {
+    var c = line[i];
+    if (c === '"') { inQ = !inQ; }
+    else if (c === "," && !inQ) { r.push(cur); cur = ""; }
+    else { cur += c; }
+  }
+  r.push(cur); return r;
+}
+function cl(s) { return (s || "").replace(/^"|"$/g, "").trim(); }
+
+function parseAnaCSV(text) {
+  var lines = text.trim().split("\n"), out = [];
+  for (var i = 1; i < lines.length; i++) {
+    var c = parseLine(lines[i]);
+    var nom = cl(c[1]), man = cl(c[7]);
+    if (nom) out.push({ matricola: cl(c[0]), nominativo: nom, stato: cl(c[2]), mansione: man.toUpperCase() });
+  }
+  return out;
+}
+function parseDPIcsv(text) {
+  var lines = text.trim().split("\n");
+  if (lines.length < 3) return;
+  var headers = parseLine(lines[1]).map(cl);
+  var out = {};
+  for (var i = 2; i < lines.length; i++) {
+    var c = parseLine(lines[i]).map(cl);
+    var man = (c[0] || "").toUpperCase(); if (!man) continue;
+    var dpis = [];
+    for (var j = 1; j < headers.length; j++) {
+      if (c[j] && headers[j]) dpis.push({ nome: headers[j], tipo: c[j] });
+    }
+    out[man] = dpis;
+  }
+  DPI_MAP = out; buildMGrid();
+}
+function loadManualCSV(input, type) {
+  if (!input.files || !input.files[0]) return;
+  var reader = new FileReader();
+  reader.onload = function(e) {
+    var text = e.target.result;
+    var st = document.getElementById("shst");
+    if (type === "ana") {
+      var p = parseAnaCSV(text);
+      if (p.length > 0) { EMPLOYEES = p; st.textContent = p.length + " dipendenti da CSV"; st.className = "shst ok"; }
+    } else {
+      parseDPIcsv(text); st.textContent = (st.textContent || "") + " | DPI aggiornati";
+    }
+  };
+  reader.readAsText(input.files[0]);
+}
+
+// ===== DIRECTORY FIRME =====
+var dirFiles = [], dirName = "", sugFile = null;
+
+function showDirModal() {
+  var saved = localStorage.getItem(SDIR);
+  if (saved) {
+    document.getElementById("msi").style.display  = "block";
+    document.getElementById("msp").textContent    = saved;
+    document.getElementById("bmus").style.display = "flex";
+  }
+  document.getElementById("modalDir").classList.add("open");
+}
+function useSavedDir() {
+  document.getElementById("modalDir").classList.remove("open");
+  var s = localStorage.getItem(SDIR);
+  if (s) { setDDisp(s + " (seleziona di nuovo)"); document.getElementById("dirInput").click(); }
+}
+function pickDirFromModal() { document.getElementById("modalDir").classList.remove("open"); document.getElementById("dirInput").click(); }
+function skipDir()          { document.getElementById("modalDir").classList.remove("open"); }
+function pickDir()          { document.getElementById("dirInput").click(); }
+
+function handleDir(input) {
+  var files = [];
+  for (var i = 0; i < input.files.length; i++) {
+    if (input.files[i].type.indexOf("image") === 0) files.push(input.files[i]);
+  }
+  if (!files.length) return;
+  dirFiles = files;
+  var fp = input.files[0].webkitRelativePath || input.files[0].name;
+  dirName = fp.indexOf("/") >= 0 ? fp.split("/")[0] : "Cartella";
+  localStorage.setItem(SDIR, dirName);
+  setDDisp(dirName + " (" + files.length + " immagini)");
+  if (sel.length && actIdx < sel.length) searchSig();
+}
+function setDDisp(t) { var el = document.getElementById("ddisp"); el.textContent = t; el.classList.add("set"); }
+
+function searchSig() {
+  if (!dirFiles.length || !sel.length) return;
+  var nom = sel[actIdx].emp.nominativo;
+  var parts = nom.toLowerCase().split(" ");
+  var best = null, bestScore = 0;
+  for (var i = 0; i < dirFiles.length; i++) {
+    var fn = dirFiles[i].name.toLowerCase().replace(/[^a-z0-9]/g, "");
+    var score = 0;
+    for (var j = 0; j < parts.length; j++) {
+      if (parts[j].length > 2 && fn.indexOf(parts[j]) >= 0) score++;
+    }
+    if (score > bestScore) { bestScore = score; best = dirFiles[i]; }
+  }
+  if (best && bestScore >= 2) { sugFile = best; showSuggest(best); }
+  else hideSuggest();
+}
+function showSuggest(file) {
+  var r = new FileReader();
+  r.onload = function(e) {
+    document.getElementById("sugImg").src       = e.target.result;
+    document.getElementById("sugFn").textContent  = file.name;
+    document.getElementById("sugDesc").textContent = "In: " + dirName;
+    document.getElementById("ssugg").style.display = "block";
+  };
+  r.readAsDataURL(file);
+}
+function hideSuggest() { document.getElementById("ssugg").style.display = "none"; sugFile = null; }
+function confSig() { if (!sugFile) return; loadSig(sugFile); hideSuggest(); }
+function rejSig()  { hideSuggest(); }
+
+// ===== FIRMA UPLOAD =====
+var sigUrl = null;
+function openSigPick() { document.getElementById("sigInput").click(); }
+function handleSigFile(input) { if (input.files && input.files[0]) loadSig(input.files[0]); }
+function evDov(e) { e.preventDefault(); document.getElementById("sdrop").classList.add("dov"); }
+function evDol(e) { document.getElementById("sdrop").classList.remove("dov"); }
+function evDod(e) {
+  e.preventDefault(); document.getElementById("sdrop").classList.remove("dov");
+  var f = e.dataTransfer.files[0];
+  if (f && f.type.indexOf("image") === 0) loadSig(f);
+}
+function loadSig(file) {
+  var r = new FileReader();
+  r.onload = function(e) {
+    sigUrl = e.target.result;
+    document.getElementById("sthumb").innerHTML = "<img src='" + sigUrl + "'>";
+    if (sel.length && actIdx < sel.length) { sel[actIdx].sig = sigUrl; renderChips(); }
+    renderPreview();
+  };
+  r.readAsDataURL(file);
+}
+function clrSig() {
+  sigUrl = null;
+  document.getElementById("sthumb").textContent = "firma";
+  document.getElementById("sigInput").value = "";
+  if (sel.length && actIdx < sel.length) { sel[actIdx].sig = null; renderChips(); }
+  renderPreview();
+}
+
+// ===== EMP DROPDOWN =====
+var closeTimer = null;
+function openEDrop() { filterEmps(); document.getElementById("edrop").classList.add("open"); }
+function scheduleCloseDrop() { closeTimer = setTimeout(function(){ document.getElementById("edrop").classList.remove("open"); }, 200); }
+
+function filterEmps() {
+  if (closeTimer) { clearTimeout(closeTimer); closeTimer = null; }
+  var q  = document.getElementById("esearch").value.toLowerCase().trim();
+  var dd = document.getElementById("edrop");
+  var fil = q
+    ? EMPLOYEES.filter(function(e){ return e.nominativo.toLowerCase().indexOf(q) >= 0 || e.mansione.toLowerCase().indexOf(q) >= 0; })
+    : EMPLOYEES;
+  var html = "";
+  var max = Math.min(fil.length, 100);
+  for (var i = 0; i < max; i++) {
+    var e   = fil[i];
+    var idx = EMPLOYEES.indexOf(e);
+    var already = false;
+    for (var j = 0; j < sel.length; j++) if (sel[j].emp === e) { already = true; break; }
+    html += "<div class='eitem" + (already ? " sel" : "") + "' onmousedown='toggleEmp(" + idx + ")'>";
+    html += "<div><div class='ein'>" + e.nominativo + "</div><div class='eim'>" + (e.mansione || "-") + " - Mat." + e.matricola + "</div></div>";
+    if (already) html += "<span style='color:#2a7a2a;font-weight:700;'>ok</span>";
+    html += "</div>";
+  }
+  dd.innerHTML = html || "<div class='eitem' style='color:#aaa;'>Nessun risultato</div>";
+  dd.classList.add("open");
+}
+
+// ===== MULTI SELECT =====
+var sel = [], actIdx = 0, pendFac = null;
+
+function toggleEmp(idx) {
+  var e = EMPLOYEES[idx];
+  var ei = -1;
+  for (var i = 0; i < sel.length; i++) if (sel[i].emp === e) { ei = i; break; }
+  if (ei >= 0) {
+    sel.splice(ei, 1);
+    if (actIdx >= sel.length) actIdx = Math.max(0, sel.length - 1);
+    renderChips(); renderPreview(); filterEmps();
+  } else {
+    var status = getDPIStatus(e.mansione);
+    var facs = [];
+    for (var k in status) if (status[k] === "X*") facs.push(k);
+    if (facs.length > 0) {
+      pendFac = { emp: e, facs: facs };
+      document.getElementById("pname").textContent = e.nominativo;
+      var html = "";
+      for (var i = 0; i < facs.length; i++) html += "<div class='pdi'><span>*</span> " + facs[i] + "</div>";
+      document.getElementById("pdpl").innerHTML = html;
+      document.getElementById("popupFac").classList.add("open");
+    } else {
+      sel.push({ emp: e, sig: null, fac: false });
+      actIdx = sel.length - 1;
+      renderChips(); renderPreview(); filterEmps();
+      setTimeout(searchSig, 100);
+    }
+  }
+}
+
+function popupRispondi(si) {
+  document.getElementById("popupFac").classList.remove("open");
+  if (!pendFac) return;
+  sel.push({ emp: pendFac.emp, sig: null, fac: si });
+  actIdx = sel.length - 1;
+  pendFac = null;
+  renderChips(); renderPreview(); filterEmps();
+  setTimeout(searchSig, 100);
+}
+
+function removeEmp(i) {
+  sel.splice(i, 1);
+  if (actIdx >= sel.length) actIdx = Math.max(0, sel.length - 1);
+  renderChips(); renderPreview();
+}
+
+function setActive(i) {
+  actIdx = i; renderChips(); renderPreview();
+  setTimeout(searchSig, 100);
+  sigUrl = sel[i] ? sel[i].sig : null;
+  document.getElementById("sthumb").innerHTML = sigUrl ? "<img src='" + sigUrl + "'>" : "firma";
+}
+
+function navDoc(d) {
+  if (!sel.length) return;
+  actIdx = (actIdx + d + sel.length) % sel.length;
+  setActive(actIdx);
+}
+
+function renderChips() {
+  var list = document.getElementById("chips");
+  document.getElementById("navLbl").textContent = sel.length ? (actIdx + 1) + " / " + sel.length : "-";
+  document.getElementById("btnPrev").disabled = document.getElementById("btnNext").disabled = sel.length <= 1;
+  if (!sel.length) { list.innerHTML = "<div class='chempty'>Nessun dipendente selezionato</div>"; return; }
+  var html = "";
+  for (var i = 0; i < sel.length; i++) {
+    var s = sel[i];
+    html += "<div class='chip" + (i === actIdx ? " act" : "") + "' onclick='setActive(" + i + ")'>";
+    html += "<div><span class='chipn'>" + s.emp.nominativo + (s.sig ? " [F]" : "") + "</span>";
+    html += "<span class='chipm'>" + (s.emp.mansione || "-") + (s.fac ? " +Fac" : "") + "</span></div>";
+    html += "<button class='chipdel' onclick='event.stopPropagation();removeEmp(" + i + ")'>x</button>";
+    html += "</div>";
+  }
+  list.innerHTML = html;
+}
+
+// ===== DOCUMENT BUILDER =====
+function buildDoc(emp, sig, fac) {
+  var status = getDPIStatus(emp.mansione);
+  var tbody = "";
+  for (var i = 0; i < DPI_ALL.length; i++) {
+    var d = DPI_ALL[i];
+    var st = status[d.nome];
+    var assigned = (st === "X") || (st === "X*" && fac);
+    var rc = assigned ? (st === "X*" ? "row-f" : "row-a") : "row-i";
+    tbody += "<tr class='" + rc + "'>";
+    tbody += "<td class='tcenter tsmall'>" + d.nmu + "</td>";
+    tbody += "<td class='tdesc'>" + d.nome + "</td>";
+    tbody += "<td class='tcenter tsmall'>" + d.norma + "</td>";
+    tbody += "<td></td><td></td>";
+    tbody += "<td class='tcenter'>" + (assigned ? "X" : "") + "</td>";
+    tbody += "<td class='tcenter'>" + (assigned ? "" : "o") + "</td>";
+    tbody += "<td class='tcenter'>" + (assigned ? "1" : "") + "</td>";
+    tbody += "<td class='cok'>" + (assigned ? "<span class='chkbox checked'>&#10003;</span>" : "<span class='chkbox'></span>") + "</td>";
+    tbody += "<td class='tcenter'>" + (assigned ? "o" : "") + "</td>";
+    tbody += "<td class='tcenter tsmall'>" + (assigned ? "X" : "") + "</td>";
+    tbody += "</tr>";
+  }
+  var sigSrc = sig ? sig : FIRMA_GENERICA_SRC;
+  var sigH = "<div class='sigbox'><img src='" + sigSrc + "' alt='firma'></div>";
+
+  return "<div class='dw'>"
+    + "<div class='dref'>ALL. 3 PR-VER-01</div>"
+    + "<div class='dlogo'>"
+    +   "<img src='" + LOGO_SRC + "' alt='Tiscanet'>"
+    +   "<div class='dlogotxt'><strong>Tiscanet Tecnologia &amp; Telecomunicazione S.r.l.</strong>"
+    +   "Via Ventotene, 106 - 80026 Casoria (NA)<br>"
+    +   "P.IVA 05237211213 - Tel. 081.576.06.98</div>"
+    + "</div>"
+    + "<div class='dtbar'>VERBALE CONSEGNA E VERIFICA DISPOSITIVI DI PROTEZIONE INDIVIDUALE</div>"
+    + "<div class='dtsub'>(Art. 77 comma 3 del D.Lgs 9 aprile 2008, N. 81 e s.m.i.)</div>"
+    + "<div class='dfields'>"
+    +   "<div class='df'><strong>NOMINATIVO:</strong> " + emp.nominativo + "</div>"
+    +   "<div class='df'><strong>MANSIONE:</strong> "   + emp.mansione   + "</div>"
+    +   "<div class='df' style='flex:.5'><strong>MATR.:</strong> " + (emp.matricola || "-") + "</div>"
+    + "</div>"
+    + "<div class='dintro'>In data " + getDocDateStr() + ", in qualita di dipendente della societa Tiscanet Tecnologia &amp; Telecomunicazione S.r.l." +
+    " con sede in Casoria (NA) alla Via Ventotene,106 , Le viene consegnato/verificato" +
+    " il materiale antinfortunistico (DPI), necessario ai fini della prevenzione degli infortuni" +
+    " e delle malattie professionali, qui di seguito contrassegnato:</div>"
+    + "<table class='dtbl'>"
+    + "<colgroup>"
+    + "<col style='width:52px'><col style='width:auto'><col style='width:80px'>"
+    + "<col style='width:50px'><col style='width:44px'>"
+    + "<col style='width:24px'><col style='width:24px'><col style='width:22px'>"
+    + "<col style='width:28px'><col style='width:22px'><col style='width:38px'>"
+    + "</colgroup>"
+    + "<thead><tr>"
+    + "<th>NMU</th><th style='text-align:left'>Descrizione DPI</th><th>Norme UNI/EN</th>"
+    + "<th>Nr. Serie</th><th>Data prod.</th>"
+    + "<th>SI</th><th>NO</th><th>Qt</th>"
+    + "<th style='background:#1e6e3a'>OK</th><th>NC</th><th>Cons.SK</th>"
+    + "</tr></thead>"
+    + "<tbody>" + tbody + "</tbody></table>"
+    + "<div class='dtipo'><strong>Trattasi di:</strong><br>"
+    + "Prima consegna &nbsp;&nbsp; Integrazione &nbsp;&nbsp; Sostituzione &nbsp;&nbsp; Altro: ___________</div>"
+    + "<div class='dver'><strong>Nel caso di Verifica periodica del Preposto:</strong><br>"
+    + "Verifica del Preposto &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; data verifica: _______________</div>"
+    + "<div class='ddich'>Il sottoscritto <strong>" + emp.nominativo + "</strong>"
+    + " in qualita di dipendente della societa Tiscanet S.r.l.,"
+    + " con l'apposizione della firma in calce al presente documento<br><br>"
+    + "<strong>DICHIARA</strong><br><br>"
+    + "di avere ricevuto, dalla suindicata Impresa, il materiale antinfortunistico elencato,"
+    + " di aver compreso le relative istruzioni, informazione e raccomandazioni di utilizzo"
+    + " e di impegnarsi a rispettare le stesse.</div>"
+    + "<div class='dfirma'>"
+    +   "<div class='dfl'>Luogo e Data<br><br>Casoria, " + getDocDateStr() + "</div>"
+    +   "<div class='dfr'><div class='dflbl'>Firma per avvenuta consegna</div>" + sigH + "</div>"
+    + "</div>"
+    + "</div>";
+}
+
+function renderPreview() {
+  var div = document.getElementById("docPrev");
+  if (!sel.length) {
+    div.innerHTML = "<div style='text-align:center;padding:40px;color:#aaa;font-family:Playfair Display,serif;'>Seleziona un dipendente per generare il modulo</div>";
+    return;
+  }
+  var s = sel[actIdx];
+  div.innerHTML = buildDoc(s.emp, s.sig, s.fac);
+  renderChips();
+}
+
+// ===== PDF =====
+function pdfFn(emp) {
+  var d = getDocDateStr();
+  var datePart = (d === "___/___/______") ? "senza_data" : d.replace(/\//g, "_");
+  return "Consegna DPI " + emp.nominativo + " " + datePart;
+}
+
+function saveSinglePDF() {
+  if (!sel.length) { alert("Seleziona almeno un dipendente."); return; }
+  savePDF(sel[actIdx]);
+}
+
+async function saveAllPDFs() {
+  if (!sel.length) { alert("Seleziona almeno un dipendente."); return; }
+  var btn = document.getElementById("btnAll");
+  btn.disabled = true;
+  for (var i = 0; i < sel.length; i++) {
+    btn.innerHTML = "<span class='spin'></span>PDF " + (i + 1) + "/" + sel.length;
+    actIdx = i; renderPreview();
+    await new Promise(function(r){ setTimeout(r, 300); });
+    await savePDF(sel[i]);
+    await new Promise(function(r){ setTimeout(r, 200); });
+  }
+  btn.innerHTML = "Salva PDF"; btn.disabled = false;
+  actIdx = 0; renderPreview();
+}
+
+async function savePDF(s) {
+  var emp = s.emp, sig = s.sig, fac = s.fac;
+  var tmp = document.createElement("div");
+  // Larghezza fissa pari al max-width del documento: niente margin auto, niente overflow
+  tmp.style.cssText = "position:fixed;left:-9999px;top:0;width:710px;overflow:hidden;background:#fff;padding:0;font-family:'Times New Roman',serif;";
+  tmp.innerHTML = buildDoc(emp, sig, fac);
+  // Forza il .dw interno ad occupare esattamente 710px senza margini auto
+  var dwEl = tmp.querySelector(".dw");
+  if (dwEl) { dwEl.style.cssText += ";max-width:710px;width:710px;margin:0;"; }
+  var st = document.createElement("style");
+  st.textContent =
+    ".dtbl tr.row-a td.cok{background:#c8f0c8!important;font-weight:700;color:#1a5a1a!important;}"
+    + ".dtbl tr.row-f td.cok{background:#fef3d8!important;font-weight:700;color:#a07010!important;}"
+    + ".dtbl tr.row-i td{background:#f5f5f5!important;color:#bbb!important;}"
+    + ".dtbl th{background:#1a2a4a!important;color:#fff!important;}"
+    + ".dtbl .cok{text-align:center;}"
+    + ".chkbox{display:inline-block;width:13px;height:13px;border:1.5px solid #333;vertical-align:middle;text-align:center;line-height:13px;font-size:10px;font-weight:900;color:#1a5a1a;}"
+    + ".chkbox.checked{background:#c8f0c8;}"
+    + ".dtbl .tcenter{text-align:center;}"
+    + ".dtbl .tsmall{font-size:6.5pt;}"
+    + ".dtbl .tdesc{text-align:left;font-size:7.5pt;}";
+  tmp.appendChild(st);
+  document.body.appendChild(tmp);
+  await new Promise(function(r){ setTimeout(r, 500); });
+  // windowWidth = larghezza reale del div, evita che html2canvas usi la larghezza schermo
+  var captureW = tmp.scrollWidth || 710;
+  var canvas = await html2canvas(tmp, { scale: 3, useCORS: true, backgroundColor: "#ffffff", logging: false, windowWidth: captureW, width: captureW });
+  document.body.removeChild(tmp);
+  var imgData = canvas.toDataURL("image/jpeg", 0.95);
+  var jspdf = window.jspdf;
+  var pdf = new jspdf.jsPDF({ orientation: "portrait", unit: "mm", format: "a4" });
+  // Margini A4: 10mm laterali, il contenuto occupa 190mm di larghezza
+  var W = 210, H = 297, M = 10, iW = W - M * 2;
+  var iH = (canvas.height / canvas.width) * iW;
+  if (iH <= H - M * 2) {
+    pdf.addImage(imgData, "JPEG", M, M, iW, iH, "", "FAST");
+  } else {
+    var ppm = canvas.width / iW;
+    var pph = (H - M * 2) * ppm;
+    var sy = 0;
+    while (sy < canvas.height) {
+      var sh = Math.min(pph, canvas.height - sy);
+      var sc = document.createElement("canvas");
+      sc.width = canvas.width; sc.height = sh;
+      sc.getContext("2d").drawImage(canvas, 0, sy, canvas.width, sh, 0, 0, canvas.width, sh);
+      if (sy > 0) pdf.addPage();
+      pdf.addImage(sc.toDataURL("image/jpeg", 0.95), "JPEG", M, M, iW, (sh / ppm), "", "FAST");
+      sy += sh;
+    }
+  }
+  pdf.setProperties({ title: pdfFn(emp), author: "Tiscanet Tecnologia &amp; Telecomunicazione S.r.l." });
+  pdf.save(pdfFn(emp) + ".pdf");
+}
+
+function loadSheet() {
+  var url = document.getElementById("sheetUrl").value;
+  var statusDiv = document.getElementById("shst");
+  
+  if (!url) {
+    statusDiv.innerText = "Inserisci un URL valido.";
+    statusDiv.className = "shst err";
+    return;
+  }
+  
+  statusDiv.innerText = "Caricamento in corso...";
+  statusDiv.className = "shst";
+  
+  // Eseguiamo la chiamata fetch verso la Web App di Google
+  fetch(url + "?type=ana")
+    .then(response => {
+      if (!response.ok) throw new Error("Errore di rete");
+      return response.json(); // Se hai impostato il JSON al Passo 1
+    })
+    .then(res => {
+      console.log("Dati ricevuti:", res.data);
+      statusDiv.innerText = "Dati caricati con successo! Righe: " + res.data.length;
+      statusDiv.className = "shst ok";
+      
+      // Qui inserirai la logica per popolare i tuoi array/variabili dei dipendenti
+      // Esempio: elaboraDatiDipendenti(res.data); 
+    })
+    .catch(error => {
+      console.error(error);
+      statusDiv.innerText = "Errore di connessione o blocco CORS.";
+      statusDiv.className = "shst err";
+    });
+}
+// Init
+renderChips();
+</script>
+</body>
+</html>
